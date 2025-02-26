@@ -1,25 +1,86 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CSVLink } from "react-csv";
 
-const Reports = () => {
+// Define TypeScript interfaces for our data structures
+interface DateRange {
+  startDate: string;
+  endDate: string;
+}
+
+interface SortConfig {
+  key: string;
+  direction: "ascending" | "descending";
+}
+
+interface ColumnsToShow {
+  id: boolean;
+  name: boolean;
+  class: boolean;
+  paid: boolean;
+  due: boolean;
+  status: boolean;
+  date: boolean;
+  mode: boolean;
+}
+
+interface ReportData {
+  id: number;
+  name: string;
+  class: string;
+  paid: number;
+  due: number;
+  status: string;
+  date: string;
+  mode: string;
+}
+
+interface ReportSummary {
+  totalStudents: number;
+  totalPaid: number;
+  totalDue: number;
+  totalAmount: number;
+  paidCount: number;
+  pendingCount: number;
+  overdueCount: number;
+  partiallyPaidCount: number;
+}
+
+interface ExportData {
+  headers: string[];
+  data: any[][];
+}
+
+interface ReportTemplate {
+  title: string;
+  type: string;
+  columns: ColumnsToShow;
+  filters: {
+    status: string;
+    class: string;
+    paymentMode: string;
+    dateRange: DateRange;
+  };
+}
+
+const Reports: React.FC = () => {
   // State management
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("All");
-  const [filterClass, setFilterClass] = useState("All");
-  const [filterPaymentMode, setFilterPaymentMode] = useState("All");
-  const [dateRange, setDateRange] = useState({
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("All");
+  const [filterClass, setFilterClass] = useState<string>("All");
+  const [filterPaymentMode, setFilterPaymentMode] = useState<string>("All");
+  const [dateRange, setDateRange] = useState<DateRange>({
     startDate: "",
     endDate: "",
   });
-  const [sortConfig, setSortConfig] = useState({
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: "id",
     direction: "ascending",
   });
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [reportType, setReportType] = useState("detailed");
-  const [reportTitle, setReportTitle] = useState("Fee Collection Report");
-  const [showColumnSettings, setShowColumnSettings] = useState(false);
-  const [columnsToShow, setColumnsToShow] = useState({
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [reportType, setReportType] = useState<string>("detailed");
+  const [reportTitle, setReportTitle] = useState<string>("Fee Collection Report");
+  const [showColumnSettings, setShowColumnSettings] = useState<boolean>(false);
+  const [columnsToShow, setColumnsToShow] = useState<ColumnsToShow>({
     id: true,
     name: true,
     class: true,
@@ -31,27 +92,27 @@ const Reports = () => {
   });
   
   // Sample data - this would normally come from an API
-  const reportData = [
-    { id: 1, name: "John Doe", class: "10A", paid: 5000, due: 0, status: "Paid", date: "2025-01-31", mode: "Online" },
-    { id: 2, name: "Jane Smith", class: "10B", paid: 3000, due: 2000, status: "Pending", date: "2025-01-15", mode: "Cash" },
-    { id: 3, name: "Alice Brown", class: "10A", paid: 0, due: 5000, status: "Overdue", date: "2025-02-01", mode: "Cheque" },
-    { id: 4, name: "Robert Johnson", class: "11A", paid: 4500, due: 500, status: "Partially Paid", date: "2025-01-20", mode: "Online" },
-    { id: 5, name: "Michael Williams", class: "11B", paid: 5000, due: 0, status: "Paid", date: "2025-01-10", mode: "Cash" },
-    { id: 6, name: "Sarah Davis", class: "12A", paid: 2000, due: 3000, status: "Partially Paid", date: "2025-01-25", mode: "Online" },
-    { id: 7, name: "Emily Wilson", class: "12B", paid: 0, due: 5000, status: "Overdue", date: "2025-01-05", mode: "Cheque" },
+  const reportData: ReportData[] = [
+    { id: 1, name: "Divya ", class: "5A", paid: 5000, due: 0, status: "Paid", date: "2025-01-31", mode: "Online" },
+    { id: 2, name: "Ashish", class: "10B", paid: 3000, due: 2000, status: "Pending", date: "2025-01-15", mode: "Cash" },
+    { id: 3, name: "Ronit", class: "10A", paid: 0, due: 5000, status: "Overdue", date: "2025-02-01", mode: "Cheque" },
+    { id: 4, name: "Riya", class: "11A", paid: 4500, due: 500, status: "Partially Paid", date: "2025-01-20", mode: "Online" },
+    { id: 5, name: "Muskan", class: "11B", paid: 5000, due: 0, status: "Paid", date: "2025-01-10", mode: "Cash" },
+    { id: 6, name: "Rahul", class: "12A", paid: 2000, due: 3000, status: "Partially Paid", date: "2025-01-25", mode: "Online" },
+    { id: 7, name: "Atul", class: "12B", paid: 0, due: 5000, status: "Overdue", date: "2025-01-05", mode: "Cheque" },
   ];
 
   // Generate class list from data
-  const classList = ["All", ...new Set(reportData.map(item => item.class))];
+  const classList: string[] = ["All", ...new Set(reportData.map(item => item.class))];
   
   // Generate payment mode list from data
-  const paymentModeList = ["All", ...new Set(reportData.map(item => item.mode))];
+  const paymentModeList: string[] = ["All", ...new Set(reportData.map(item => item.mode))];
   
   // Generate status list from data
-  const statusList = ["All", ...new Set(reportData.map(item => item.status))];
+  const statusList: string[] = ["All", ...new Set(reportData.map(item => item.status))];
 
   // Filter data based on multiple criteria
-  const filteredData = reportData.filter(
+  const filteredData: ReportData[] = reportData.filter(
     (row) => {
       const statusMatch = filterStatus === "All" || row.status === filterStatus;
       const classMatch = filterClass === "All" || row.class === filterClass;
@@ -74,8 +135,8 @@ const Reports = () => {
   );
 
   // Sorting function
-  const requestSort = (key) => {
-    let direction = 'ascending';
+  const requestSort = (key: string): void => {
+    let direction: 'ascending' | 'descending' = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     }
@@ -83,18 +144,18 @@ const Reports = () => {
   };
 
   // Apply sorting to filtered data
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (a[sortConfig.key] < b[sortConfig.key]) {
+  const sortedData: ReportData[] = [...filteredData].sort((a, b) => {
+    if (a[sortConfig.key as keyof ReportData] < b[sortConfig.key as keyof ReportData]) {
       return sortConfig.direction === 'ascending' ? -1 : 1;
     }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
+    if (a[sortConfig.key as keyof ReportData] > b[sortConfig.key as keyof ReportData]) {
       return sortConfig.direction === 'ascending' ? 1 : -1;
     }
     return 0;
   });
 
   // Toggle row selection
-  const toggleRowSelection = (id) => {
+  const toggleRowSelection = (id: number): void => {
     setSelectedRows(prev => {
       if (prev.includes(id)) {
         return prev.filter(rowId => rowId !== id);
@@ -105,7 +166,7 @@ const Reports = () => {
   };
 
   // Select all rows
-  const toggleSelectAll = () => {
+  const toggleSelectAll = (): void => {
     if (selectedRows.length === sortedData.length) {
       setSelectedRows([]);
     } else {
@@ -114,7 +175,7 @@ const Reports = () => {
   };
 
   // Handle column visibility toggle
-  const toggleColumn = (column) => {
+  const toggleColumn = (column: keyof ColumnsToShow): void => {
     setColumnsToShow(prev => ({
       ...prev,
       [column]: !prev[column]
@@ -122,7 +183,7 @@ const Reports = () => {
   };
 
   // Generate summary data
-  const summary = {
+  const summary: ReportSummary = {
     totalStudents: filteredData.length,
     totalPaid: filteredData.reduce((sum, row) => sum + row.paid, 0),
     totalDue: filteredData.reduce((sum, row) => sum + row.due, 0),
@@ -134,7 +195,7 @@ const Reports = () => {
   };
 
   // Prepare CSV export data
-  const getExportData = () => {
+  const getExportData = (): ExportData => {
     const headers = [
       { label: "ID", key: "id", show: columnsToShow.id },
       { label: "Student Name", key: "name", show: columnsToShow.name },
@@ -152,12 +213,12 @@ const Reports = () => {
 
     return {
       headers: headers.map(h => h.label),
-      data: dataToExport.map(row => headers.map(h => row[h.key])),
+      data: dataToExport.map(row => headers.map(h => row[h.key as keyof ReportData])),
     };
   };
 
   // Export to PDF function
-  const exportToPDF = () => {
+  const exportToPDF = (): void => {
     const { headers, data } = getExportData();
     const title = `${reportTitle} - ${new Date().toLocaleDateString()}`;
     
@@ -168,19 +229,19 @@ const Reports = () => {
   };
 
   // Print function
-  const printReport = () => {
+  const printReport = (): void => {
     window.print();
   };
 
   // Email report function
-  const emailReport = () => {
+  const emailReport = (): void => {
     alert("Email functionality would be implemented here");
     // Typically would open a dialog to enter email details
   };
 
   // Save report template
-  const saveReportTemplate = () => {
-    const template = {
+  const saveReportTemplate = (): void => {
+    const template: ReportTemplate = {
       title: reportTitle,
       type: reportType,
       columns: columnsToShow,
@@ -621,7 +682,7 @@ const Reports = () => {
             
             {sortedData.length === 0 && (
               <tr>
-                <td colSpan="9" style={{ padding: "20px", textAlign: "center" }}>
+                <td colSpan={9} style={{ padding: "20px", textAlign: "center" }}>
                   No records found matching your criteria
                 </td>
               </tr>
@@ -633,22 +694,9 @@ const Reports = () => {
             <tr>
               <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd" }}></td>
               
-              {columnsToShow.id && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd" }}></td>}
-              {columnsToShow.name && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd" }}>Total</td>}
               {columnsToShow.class && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd" }}></td>}
-              
-              {columnsToShow.paid && (
-                <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd", textAlign: "right" }}>
-                  ₹{filteredData.reduce((sum, row) => sum + row.paid, 0).toLocaleString()}
-                </td>
-              )}
-              
-              {columnsToShow.due && (
-                <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd", textAlign: "right" }}>
-                  ₹{filteredData.reduce((sum, row) => sum + row.due, 0).toLocaleString()}
-                </td>
-              )}
-              
+              {columnsToShow.paid && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd", textAlign: "right" }}>₹{summary.totalPaid.toLocaleString()}</td>}
+              {columnsToShow.due && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd", textAlign: "right" }}>₹{summary.totalDue.toLocaleString()}</td>}
               {columnsToShow.status && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd" }}></td>}
               {columnsToShow.date && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd" }}></td>}
               {columnsToShow.mode && <td style={{ padding: "12px 8px", borderTop: "2px solid #ddd" }}></td>}
@@ -657,51 +705,56 @@ const Reports = () => {
         </table>
       </div>
 
-      {/* Print-specific styles hidden in normal view */}
-      <style type="text/css" media="print">
-        {`
-          @page {
-            margin: 0.5cm;
-            size: landscape;
-          }
-          
-          body {
-            font-size: 12pt;
-          }
-          
-          .reports-container {
-            padding: 0 !important;
-          }
-          
-          button, .csv-link, input[type="checkbox"] {
-            display: none !important;
-          }
-          
-          h1 {
-            text-align: center;
-            font-size: 18pt !important;
-            margin-bottom: 10px !important;
-          }
-          
-          table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-          }
-          
-          th, td {
-            border: 1px solid #000 !important;
-            padding: 5px !important;
-          }
-          
-          thead {
-            display: table-header-group;
-          }
-          
-          tfoot {
-            display: table-footer-group;
-          }
-        `}
-      </style>
+      {/* Pagination (simplified version) */}
+      <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button 
+            style={{ 
+              padding: "8px 16px", 
+              border: "1px solid #ddd", 
+              backgroundColor: "#f9f9f9", 
+              cursor: "pointer",
+              borderRadius: "4px" 
+            }}
+          >
+            Previous
+          </button>
+          <button 
+            style={{ 
+              padding: "8px 16px", 
+              border: "1px solid #ddd", 
+              backgroundColor: "#2196F3", 
+              color: "white", 
+              cursor: "pointer",
+              borderRadius: "4px" 
+            }}
+          >
+            1
+          </button>
+          <button 
+            style={{ 
+              padding: "8px 16px", 
+              border: "1px solid #ddd", 
+              backgroundColor: "#f9f9f9", 
+              cursor: "pointer",
+              borderRadius: "4px" 
+            }}
+          >
+            2
+          </button>
+          <button 
+            style={{ 
+              padding: "8px 16px", 
+              border: "1px solid #ddd", 
+              backgroundColor: "#f9f9f9", 
+              cursor: "pointer",
+              borderRadius: "4px" 
+            }}
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

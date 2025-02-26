@@ -60,7 +60,7 @@ const StudentRegistrationForm = () => {
       setFormData((prev) => ({
         ...prev,
         [parent]: {
-          ...(prev[parent] as any),
+          ...(prev[parent] as Record<string, any>),
           [child]: value,
         },
       }));
@@ -217,7 +217,7 @@ const StudentRegistrationForm = () => {
   );
 
   const renderForm = () => {
-    const formSections = {
+    const formSections: { [key: number]: JSX.Element } = {
       1: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>

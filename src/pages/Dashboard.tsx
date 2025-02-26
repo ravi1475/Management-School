@@ -1,9 +1,19 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { Users, CreditCard, AlertCircle, TrendingUp, Calendar, Bell, PieChart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { LineChart, Line, PieChart as RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+// Define proper types for chart components
+interface PieChartData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface LineChartData {
+  month: string;
+  amount: number;
+}
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -91,7 +101,7 @@ const Dashboard = () => {
   ];
 
   // Sample data for charts
-  const feeCollectionData = [
+  const feeCollectionData: LineChartData[] = [
     { month: 'Jan', amount: 1250000 },
     { month: 'Feb', amount: 1350000 },
     { month: 'Mar', amount: 1543250 },
@@ -101,7 +111,7 @@ const Dashboard = () => {
   ];
 
   // Data for pie chart
-  const departmentDistribution = [
+  const departmentDistribution: PieChartData[] = [
     { name: 'Computer Science', value: 750, color: '#4f46e5' },
     { name: 'Engineering', value: 620, color: '#8b5cf6' },
     { name: 'Business', value: 480, color: '#ec4899' },
@@ -109,13 +119,13 @@ const Dashboard = () => {
     { name: 'Science', value: 343, color: '#14b8a6' },
   ];
 
-  const formatIndianRupee = (value) => {
+  const formatIndianRupee = (value: number) => {
     return `₹${value.toLocaleString('en-IN')}`;
   };
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: custom => ({
+    visible: (custom: number) => ({
       opacity: 1,
       y: 0,
       transition: { delay: custom * 0.1, duration: 0.4 }
@@ -196,7 +206,7 @@ const Dashboard = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-indigo-600" />
+              <CreditCard className="h-5 w-5 text-indigo-600" aria-hidden="true" />
               <h2 className="text-xl font-semibold text-gray-900">Fee Collection Trend</h2>
             </div>
             <select className="text-sm border rounded-md p-1">
@@ -210,7 +220,7 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis tickFormatter={(value) => `₹${(value/100000).toFixed(1)}L`} />
-                <Tooltip formatter={(value) => formatIndianRupee(value)} />
+                <Tooltip formatter={(value: number) => [formatIndianRupee(value), 'Amount']} />
                 <Legend />
                 <Line type="monotone" dataKey="amount" stroke="#4f46e5" activeDot={{ r: 8 }} name="Fee Collection" />
               </LineChart>
@@ -225,13 +235,13 @@ const Dashboard = () => {
           custom={1}
         >
           <div className="flex items-center gap-2 mb-6">
-            <PieChart className="h-5 w-5 text-indigo-600" />
+            <PieChart className="h-5 w-5 text-indigo-600" aria-hidden="true" />
             <h2 className="text-xl font-semibold text-gray-900">Department Distribution</h2>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <RechartsPieChart>
-                <Pie
+                <Pie<any>
                   data={departmentDistribution}
                   cx="50%"
                   cy="50%"
@@ -240,13 +250,15 @@ const Dashboard = () => {
                   fill="#8884d8"
                   dataKey="value"
                   nameKey="name"
-                  label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({name, percent}: {name: string; percent: number}) => 
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
                 >
                   {departmentDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`${value} students`, 'Enrollment']} />
+                <Tooltip formatter={(value: number) => [`${value} students`, 'Enrollment']} />
                 <Legend />
               </RechartsPieChart>
             </ResponsiveContainer>
