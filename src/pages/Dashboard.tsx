@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, CreditCard, AlertCircle, TrendingUp, Calendar, Bell, PieChart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { LineChart, Line, PieChart as RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, PieChart, RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Define proper types for chart components
 interface PieChartData {
