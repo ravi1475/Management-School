@@ -50,7 +50,7 @@ import StudentRegistrationForm from './pages/StudentForm';
 
 // Components
 import Layout from './components/Layout';
-import LoginForm from './components/LoginForm';
+import LoginForm from './pages/LoginForm';
 
 function App() {
   const [auth, setAuth] = useState({
