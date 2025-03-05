@@ -85,7 +85,7 @@ function App() {
             <Route path="/Attendence" element={<Reports />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/reportsr" element={<AccountsPage />} />
+            <Route path="/AccountPage" element={<AccountsPage />} />
             <Route path="/StudentRegistrationForm" element={<StudentRegistrationForm />} />
 
           </Routes>
