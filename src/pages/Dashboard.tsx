@@ -114,7 +114,7 @@ const Dashboard = () => {
   const departmentDistribution: PieChartData[] = [
     { name: 'Computer Science', value: 750, color: '#4f46e5' },
     { name: 'Engineering', value: 620, color: '#8b5cf6' },
-    { name: 'Business', value: 480, color: '#ec4899' },
+    { name: 'Business', value: 1480, color: '#ec4899' },
     { name: 'Arts', value: 350, color: '#f97316' },
     { name: 'Science', value: 343, color: '#14b8a6' },
   ];
