@@ -415,7 +415,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
                 <NavLink 
-                  to="/master/classes" 
+                  to="/master/classe-section" 
                   label="Classes & Sections" 
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
@@ -434,13 +434,12 @@ const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
                 onClick={() => toggleDropdown("students")}
               >
                 <NavLink 
-                  to="/students" 
-                  label="Student Directory" 
-                  badge={158}
+                  to="/students/ManageStudents" 
+                  label="Manage Students" 
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
                 <NavLink 
-                  to="/students/admission" 
+                  to="/students/StudentRegistrationForm" 
                   label="New Admission" 
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
@@ -464,6 +463,11 @@ const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
                 <NavLink 
+                  to="/staff/ManageTeachers" 
+                  label="Manage Teachers" 
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                />
+                <NavLink 
                   to="/staff/attendance" 
                   label="Attendance" 
                   onClick={() => setIsMobileSidebarOpen(false)}
@@ -483,8 +487,9 @@ const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
                 <NavLink 
-                  to="/fee-collection" 
+                  to="/students" 
                   label="Fee Collection" 
+                  badge={158}
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
                 <NavLink 

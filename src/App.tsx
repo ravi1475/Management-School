@@ -48,6 +48,11 @@ import Layout from './components/Layout';
 import StudentRegistrationForm from './pages/StudentForm';
 import AuthPage from './pages/AuthPage';
 import AccountsPage from './pages/AccountsPage';
+import { ClassSectionManagement } from './components/Masters/Class';
+import { ExtraFess } from './components/Masters/ExtraFess';
+import { Fee_Head_New } from './components/Masters/Fee_Head_New';
+import { ManageStudent } from './pages/ManageStudents'
+import { ManageTeachers } from './pages/ManageTeachers';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -86,8 +91,12 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/AccountPage" element={<AccountsPage />} />
-            <Route path="/StudentRegistrationForm" element={<StudentRegistrationForm />} />
-
+            <Route path="/master/classe-section" element={<ClassSectionManagement />} />
+            <Route path="/master/extra-fess" element={<ExtraFess />} />
+            <Route path="/master/fee_head_new" element={<Fee_Head_New />} />
+            <Route path="/students/StudentRegistrationForm" element={<StudentRegistrationForm />} />
+            <Route path="/students/ManageStudents" element={<ManageStudent/>} />
+            <Route path='/staff/ManageTeachers' element={<ManageTeachers/>} />
           </Routes>
         </Layout>
       )}
