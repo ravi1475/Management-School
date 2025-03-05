@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import LoginForm from './LoginForm';
-import SignupForm from './SignUpForm';
+import LoginForm from '../pages/LoginForm';
+import SignupForm from '../pages/SignUpForm';
 
 interface AuthPageProps {
-  onAuthSuccess: (token: string) => void;
+  onAuthSuccess: (token: string, role: string) => void;
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
+
+  // Handle login success with role
+  const handleLoginSuccess = (token: string, role: string) => {
+    onAuthSuccess(token, role);
+  };
+
+  // Handle signup success (adapting to include role)
+  const handleSignupSuccess = (token: string, role: string) => {
+    onAuthSuccess(token, role);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
@@ -38,9 +48,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onAuthSuccess }) => {
           
           <div className="p-6">
             {isLogin ? (
-              <LoginForm onLoginSuccess={onAuthSuccess} />
+              <LoginForm onLoginSuccess={handleLoginSuccess} />
             ) : (
-              <SignupForm onSignupSuccess={onAuthSuccess} />
+              <SignupForm onSignupSuccess={handleSignupSuccess} />
             )}
           </div>
         </div>
