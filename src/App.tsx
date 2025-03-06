@@ -244,7 +244,7 @@ function App() {
                 <ManageTeachers />
               </Layout>
             </ProtectedRoute>
-          }
+          } > </Route>
 
 
 <Route 

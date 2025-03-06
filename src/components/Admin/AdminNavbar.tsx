@@ -160,10 +160,9 @@ const AdminNavbar = {
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/master/subjects" 
-              label="Subjects" 
+              
 
-              to="/staff" 
+               to="/staff" 
               label="Staff Directory" 
               onClick={() => setIsMobileSidebarOpen(false)}/>
                   
