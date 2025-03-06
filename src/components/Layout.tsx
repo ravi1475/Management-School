@@ -493,7 +493,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />
                 <NavLink 
-                  to="/accounts" 
+                  to="/finance/accountmanagement" 
                   label="Accounts" 
                   onClick={() => setIsMobileSidebarOpen(false)}
                 />

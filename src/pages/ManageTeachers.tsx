@@ -4,6 +4,7 @@ interface Teacher {
   id: number;
   name: string;
   teachClasses: string[];
+  subjects: string[];
   yearOfJoining: number;
   experience: number;
   tgt: boolean;
@@ -16,6 +17,7 @@ export const ManageTeachers = () => {
       id: 1,
       name: 'John Sharma',
       teachClasses: ['9th', '10th'],
+      subjects: ['Math', 'Science'],
       yearOfJoining: 2015,
       experience: 9,
       tgt: true,
@@ -25,6 +27,7 @@ export const ManageTeachers = () => {
       id: 2,
       name: 'Priya Singh',
       teachClasses: ['11th', '12th'],
+      subjects: ['Physics', 'Chemistry'],
       yearOfJoining: 2018,
       experience: 6,
       tgt: false,
@@ -39,6 +42,7 @@ export const ManageTeachers = () => {
   const [formData, setFormData] = useState({
     name: '',
     teachClasses: '',
+    subjects: '',
     yearOfJoining: '',
     experience: '',
     tgt: false,
@@ -48,18 +52,20 @@ export const ManageTeachers = () => {
   // Filter teachers based on search term
   const filteredTeachers = teachers.filter(teacher =>
     teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    teacher.teachClasses.join(' ').toLowerCase().includes(searchTerm.toLowerCase())
+    teacher.teachClasses.join(' ').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    teacher.subjects.join(' ').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.teachClasses.trim()) return;
+    if (!formData.name.trim() || !formData.teachClasses.trim() || !formData.subjects.trim()) return;
 
     const newTeacher = {
       id: currentTeacher ? currentTeacher.id : teachers.length + 1,
       name: formData.name.trim(),
       teachClasses: formData.teachClasses.split(',').map(c => c.trim()),
+      subjects: formData.subjects.split(',').map(s => s.trim()),
       yearOfJoining: parseInt(formData.yearOfJoining),
       experience: parseInt(formData.experience),
       tgt: formData.tgt,
@@ -88,6 +94,7 @@ export const ManageTeachers = () => {
     setFormData({
       name: teacher.name,
       teachClasses: teacher.teachClasses.join(', '),
+      subjects: teacher.subjects.join(', '),
       yearOfJoining: teacher.yearOfJoining.toString(),
       experience: teacher.experience.toString(),
       tgt: teacher.tgt,
@@ -101,6 +108,7 @@ export const ManageTeachers = () => {
     setFormData({
       name: '',
       teachClasses: '',
+      subjects: '',
       yearOfJoining: '',
       experience: '',
       tgt: false,
@@ -150,6 +158,7 @@ export const ManageTeachers = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Classes</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subjects</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joining Year</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Experience</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">TGT/PGT</th>
@@ -161,6 +170,7 @@ export const ManageTeachers = () => {
                 <tr key={teacher.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{teacher.name}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{teacher.teachClasses.join(', ')}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{teacher.subjects.join(', ')}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{teacher.yearOfJoining}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{teacher.experience} years+</td>
                   <td className="px-6 py-4 text-sm text-gray-500">
@@ -242,6 +252,20 @@ export const ManageTeachers = () => {
                     onChange={(e) => setFormData({ ...formData, teachClasses: e.target.value })}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="e.g., 9th, 10th"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Subjects (comma separated) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.subjects}
+                    onChange={(e) => setFormData({ ...formData, subjects: e.target.value })}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="e.g., Math, Science"
                     required
                   />
                 </div>

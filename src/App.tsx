@@ -53,6 +53,7 @@ import { ExtraFess } from './components/Masters/ExtraFess';
 import { Fee_Head_New } from './components/Masters/Fee_Head_New';
 import { ManageStudent } from './pages/ManageStudents'
 import { ManageTeachers } from './pages/ManageTeachers';
+import  AccountManagement  from './pages/AccountManagement'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -97,6 +98,7 @@ function App() {
             <Route path="/students/StudentRegistrationForm" element={<StudentRegistrationForm />} />
             <Route path="/students/ManageStudents" element={<ManageStudent/>} />
             <Route path='/staff/ManageTeachers' element={<ManageTeachers/>} />
+            <Route path='/finance/accountmanagement' element={<AccountManagement/>} />
           </Routes>
         </Layout>
       )}
