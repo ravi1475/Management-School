@@ -187,58 +187,6 @@ const AdminNavbar = {
            
           </NavDropdown>
 
-
-    
-
-
-          {/* Fees Dropdown */}
-          <NavDropdown 
-            title="Finance" 
-            icon={<DollarSign className="h-5 w-5 text-emerald-600" />}
-            isOpen={activeDropdown === "fees"} 
-            onClick={() => toggleDropdown("fees")}
-          >
-            <NavLink 
-              to="/finance/fee-structure" 
-              label="Fee Structure" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/finance/fee-collection" 
-              label="Fee Collection" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/finance/accounts" 
-              label="Accounts" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-          </NavDropdown>
-
-          {/* Examination System Dropdown */}
-          <NavDropdown 
-            title="Examinations" 
-            icon={<FileText className="h-5 w-5 text-red-600" />}
-            isOpen={activeDropdown === "examination"} 
-            onClick={() => toggleDropdown("examination")}
-          >
-            <NavLink 
-              to="/examination" 
-              label="Exam Dashboard" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/examination/schedule" 
-              label="Exam Schedule" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/examination/results" 
-              label="Results" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-          </NavDropdown>
-
           {/* Academics */}
           <NavDropdown 
             title="Academics" 
