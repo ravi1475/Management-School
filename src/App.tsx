@@ -12,6 +12,12 @@ import AccountsPage from './pages/AccountsPage';
 import UserManagement from './pages/UserManagement';
 import UserEdit from './pages/UserEdit';
 import LoginForm from './pages/LoginForm';
+import { ClassSectionManagement } from './components/Masters/Class';
+import { ExtraFess } from './components/Masters/ExtraFess';
+import { Fee_Head_New } from './components/Masters/Fee_Head_New';
+import { ManageStudent } from './pages/ManageStudents';
+import { ManageTeachers } from './pages/ManageTeachers';
+import AccountManagement from './pages/AccountManagement';
 
 // Uncomment these when the components are available
 // import StudentFeeDetails from './pages/StudentFeeDetails';
@@ -24,58 +30,7 @@ function App() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   
-  useEffect(() => {
-    // Check if user is authenticated on component mount
-    const storedToken = localStorage.getItem('authToken');
-    const storedRole = localStorage.getItem('userRole');
-    
-    if (storedToken && storedRole) {
-      setToken(storedToken);
-      setUserRole(storedRole);
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleAuthSuccess = (token: string, role: string = 'user') => {
-    // Store auth info in localStorage
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userRole', role);
-    
-    // Update state
-    setToken(token);
-    setUserRole(role);
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    // Clear auth info
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
-    
-    // Reset state
-    setToken(null);
-    setUserRole(null);
-    setIsAuthenticated(false);
-  };
-
-  // Protected route component
-  const ProtectedRoute = ({ 
-    children, 
-    allowedRoles = ['admin', 'school', 'teacher', 'user'] 
-  }: { 
-    children: JSX.Element, 
-    allowedRoles?: string[] 
-  }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/auth" replace />;
-    }
-    
-    if (userRole && !allowedRoles.includes(userRole)) {
-      return <Navigate to="/unauthorized" replace />;
-    }
-    
-    return children;
-  };
+  // ... existing code ...
 
   return (
     <Router>
@@ -121,6 +76,7 @@ function App() {
           } 
         />
         
+        {/* Original routes from main branch */}
         <Route 
           path="/students" 
           element={
@@ -193,6 +149,84 @@ function App() {
             <ProtectedRoute allowedRoles={['admin', 'school']}>
               <Layout userRole={userRole} onLogout={handleLogout}>
                 <StudentRegistrationForm />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* New routes from new branch */}
+        <Route 
+          path="/master/classe-section" 
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <ClassSectionManagement />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/master/extra-fess" 
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <ExtraFess />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/master/fee_head_new" 
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <Fee_Head_New />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/students/StudentRegistrationForm" 
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <StudentRegistrationForm />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/students/ManageStudents" 
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <ManageStudent />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/staff/ManageTeachers" 
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <ManageTeachers />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/finance/accountmanagement" 
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <AccountManagement />
               </Layout>
             </ProtectedRoute>
           } 
