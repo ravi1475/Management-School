@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 
 interface SignupFormProps {
-  onSignupSuccess: (token: string) => void;
+  onSignupSuccess: (token: string, role: string) => void;
 }
 
 interface FormData {
@@ -95,7 +95,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignupSuccess }) => {
       
       // Generate mock token after successful registration
       const mockToken = `auth_${Math.random().toString(36).substring(2)}`;
-      onSignupSuccess(mockToken);
+      // Default role for new signups is 'user'
+      onSignupSuccess(mockToken, 'user');
     } catch (error) {
       console.error('Signup failed', error);
       setSignupError('An error occurred during registration. Please try again.');
