@@ -8,13 +8,16 @@ import {
   Home, 
   Calendar, 
   Users, 
-  Database, 
   BarChart2,
   HelpCircle,
   DollarSign,
   Book,
-  ChevronDown
+  ChevronDown,
+  Building, 
+  UserPlus,
+  Shield
 } from "lucide-react";
+
 
 interface AdminNavbarProps {
   activeDropdown: string | null;
@@ -114,28 +117,49 @@ const AdminNavbar = {
             onClick={() => setIsMobileSidebarOpen(false)}
           />
 
-          {/* Master Dropdown */}
+          
+
+          {/* Administration Dropdown */}
+            <NavDropdown 
+              title="Administration" 
+              icon={<Shield className="h-5 w-5 text-purple-600" />}
+              isOpen={activeDropdown === "administration"} 
+              onClick={() => toggleDropdown("administration")}
+            >
+              <NavLink 
+                to="/admin/schools" 
+                icon={<Building className="h-4 w-4 text-indigo-600" />}
+                label="Manage Schools" 
+                onClick={() => setIsMobileSidebarOpen(false)}
+              />
+              <NavLink 
+                to="/admin/users" 
+                icon={<UserPlus className="h-4 w-4 text-indigo-600" />}
+                label="Manage Users" 
+                onClick={() => setIsMobileSidebarOpen(false)}
+              />
+            </NavDropdown>  
+
+
+            {/* Staff Dropdown */}
           <NavDropdown 
-            title="Master Data" 
-            icon={<Database className="h-5 w-5 text-blue-600" />}
-            isOpen={activeDropdown === "master"} 
-            onClick={() => toggleDropdown("master")}
+            title="Staff" 
+            icon={<Users className="h-5 w-5 text-orange-600" />}
+            isOpen={activeDropdown === "staff"} 
+            onClick={() => toggleDropdown("staff")}
           >
             <NavLink 
-              to="/master" 
-              label="Master Dashboard" 
+              to="/staff" 
+              label="Staff Directory" 
+              onClick={() => setIsMobileSidebarOpen(false)}/>
+                  
+              <NavLink 
+              to="/staff/documents" 
+              label="Document Management" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
-            <NavLink 
-              to="/master/classes" 
-              label="Classes & Sections" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/master/subjects" 
-              label="Subjects" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
+             
+          
           </NavDropdown>
 
           {/* Students Dropdown */}
@@ -163,24 +187,7 @@ const AdminNavbar = {
             />
           </NavDropdown>
 
-          {/* Staff Dropdown */}
-          <NavDropdown 
-            title="Staff" 
-            icon={<Users className="h-5 w-5 text-orange-600" />}
-            isOpen={activeDropdown === "staff"} 
-            onClick={() => toggleDropdown("staff")}
-          >
-            <NavLink 
-              to="/staff" 
-              label="Staff Directory" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/staff/attendance" 
-              label="Attendance" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-          </NavDropdown>
+          
 
           {/* Fees Dropdown */}
           <NavDropdown 
@@ -251,7 +258,7 @@ const AdminNavbar = {
 
           {/* Reports */}
           <NavLink 
-            to="/reports" 
+            to="/reports-Admin" 
             icon={<BarChart2 className="h-5 w-5 text-yellow-600" />} 
             label="Reports" 
             onClick={() => setIsMobileSidebarOpen(false)}

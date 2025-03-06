@@ -12,6 +12,11 @@ import AccountsPage from './pages/AccountsPage';
 import UserManagement from './pages/UserManagement';
 import UserEdit from './pages/UserEdit';
 import LoginForm from './pages/LoginForm';
+import ManageSchools from './components/Admin/ManageSchools';
+import ManageUsers from './components/Admin/ManageUser';
+import StaffDirectory from './components/Admin/StaffDirectory';
+import StaffDocumentManagement from "./components/Admin/StaffDocumentManagement";
+
 
 // Uncomment these when the components are available
 // import StudentFeeDetails from './pages/StudentFeeDetails';
@@ -78,7 +83,11 @@ function App() {
   };
 
   return (
+    
+
+    
     <Router>
+      
       <Routes>
         {/* Public routes */}
         <Route 
@@ -222,6 +231,52 @@ function App() {
           } 
         />
         */}
+
+
+               {/* Admin Routes */}
+           <Route 
+             path="/admin/schools" 
+             element={
+               <ProtectedRoute allowedRoles={['admin']}>
+                 <Layout onLogout={handleLogout} userRole={userRole}>
+                   <ManageSchools />
+                 </Layout>
+               </ProtectedRoute>
+             } 
+           />
+
+           <Route 
+             path="/admin/users" 
+             element={
+               <ProtectedRoute allowedRoles={['admin']}>
+                 <Layout onLogout={handleLogout} userRole={userRole}>
+                   <ManageUsers />
+                 </Layout>
+               </ProtectedRoute>
+             } 
+           />
+
+         <Route 
+           path="/staff" 
+           element={
+             <ProtectedRoute allowedRoles={['admin']}>
+               <Layout onLogout={handleLogout} userRole={userRole}>
+                 <StaffDirectory />
+               </Layout>
+             </ProtectedRoute>
+           } 
+         />
+
+                 <Route 
+                   path="/staff/documents" 
+                   element={
+                     <ProtectedRoute allowedRoles={['admin']}>
+                       <Layout onLogout={handleLogout} userRole={userRole}>
+                         <StaffDocumentManagement />
+                       </Layout>
+                     </ProtectedRoute>
+                   } 
+                 />
         
         {/* User Management Routes */}
         <Route 
@@ -234,6 +289,8 @@ function App() {
             </ProtectedRoute>
           } 
         />
+
+
         
         {/* Uncomment these routes when the components are available */}
         {/*
@@ -306,6 +363,9 @@ function App() {
                     onClick={() => window.history.back()} 
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                   >
+
+
+
                     Go Back
                   </button>
                 </div>
@@ -317,7 +377,10 @@ function App() {
         />
       </Routes>
     </Router>
+
+
   );
+  
 }
 
 export default App;
