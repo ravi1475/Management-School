@@ -12,6 +12,10 @@ import AccountsPage from './pages/AccountsPage';
 import UserManagement from './pages/UserManagement';
 import UserEdit from './pages/UserEdit';
 import LoginForm from './pages/LoginForm';
+import { ClassSectionManagement } from './components/Admin/Class'
+import { ManageTeachers } from './pages/ManageTeachers'
+import { ManageStudent } from './pages/ManageStudents'
+// import  StudentFeeDetails  from './components/StudentFeeDetails'
 
 // Uncomment these when the components are available
 // import StudentFeeDetails from './pages/StudentFeeDetails';
@@ -122,7 +126,7 @@ function App() {
         />
         
         <Route 
-          path="/students" 
+          path="/school/students/financial-management/student-management" 
           element={
             <ProtectedRoute>
               <Layout userRole={userRole} onLogout={handleLogout}>
@@ -133,7 +137,7 @@ function App() {
         />
         
         <Route 
-          path="/fee-structure" 
+          path="/school/financial-management/fee-structure" 
           element={
             <ProtectedRoute>
               <Layout userRole={userRole} onLogout={handleLogout}>
@@ -166,7 +170,7 @@ function App() {
         />
         
         <Route 
-          path="/reports" 
+          path="/school/reports" 
           element={
             <ProtectedRoute>
               <Layout userRole={userRole} onLogout={handleLogout}>
@@ -177,7 +181,7 @@ function App() {
         />
         
         <Route 
-          path="/AccountPage" 
+          path="/school/financial-management/account-page" 
           element={
             <ProtectedRoute>
               <Layout userRole={userRole} onLogout={handleLogout}>
@@ -188,7 +192,7 @@ function App() {
         />
         
         <Route 
-          path="/StudentRegistrationForm" 
+          path="/students/StudentRegistrationForm" 
           element={
             <ProtectedRoute allowedRoles={['admin', 'school']}>
               <Layout userRole={userRole} onLogout={handleLogout}>
@@ -196,6 +200,37 @@ function App() {
               </Layout>
             </ProtectedRoute>
           } 
+        />
+        < Route
+          path='/master/class-section'
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <ManageStudent />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/school/students/manage-students'
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <ManageStudent />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/school/administration/manage-teachers'
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <ManageTeachers />
+              </Layout>
+            </ProtectedRoute>
+          }
         />
         
         {/* Uncomment these routes when the components are available */}

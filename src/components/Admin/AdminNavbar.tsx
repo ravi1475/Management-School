@@ -127,7 +127,7 @@ const AdminNavbar = {
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/master/classes" 
+              to="/master/class-section" 
               label="Classes & Sections" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
@@ -152,8 +152,13 @@ const AdminNavbar = {
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/students/admission" 
+              to="/students/StudentRegistrationForm" 
               label="New Admission" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/student/manage-students" 
+              label="Manage Students" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
@@ -173,6 +178,11 @@ const AdminNavbar = {
             <NavLink 
               to="/staff" 
               label="Staff Directory" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/staff/manage-teachers" 
+              label="Manage Teachers" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
