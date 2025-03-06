@@ -258,7 +258,7 @@ const AdminNavbar = {
 
           {/* Reports */}
           <NavLink 
-            to="/reports-Admin" 
+            to="/reports-admin" 
             icon={<BarChart2 className="h-5 w-5 text-yellow-600" />} 
             label="Reports" 
             onClick={() => setIsMobileSidebarOpen(false)}

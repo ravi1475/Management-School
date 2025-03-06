@@ -1,741 +1,1043 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  BarChart2, 
-  Download, 
-  FileText, 
-  Users, 
-  Calendar, 
-  Award, 
-  TrendingUp,
-  Filter,
-  RefreshCw,
-  ChevronDown
-} from "lucide-react";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart, 
-  Area
-} from "recharts";
+  LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+  ComposedChart, Scatter
+} from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
-// Sample data for charts
+// Styled components could be used for more advanced styling
+// This is a simulated styled component approach
+const StyledCard = ({ children, className = '' }) => (
+  <div className={`bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl ${className}`}>
+    {children}
+  </div>
+);
+
+// Enhanced mock data with more details
+const attendanceData = [
+  { month: 'Jan', attendance: 92, previousYear: 90, target: 95 },
+  { month: 'Feb', attendance: 94, previousYear: 89, target: 95 },
+  { month: 'Mar', attendance: 91, previousYear: 88, target: 95 },
+  { month: 'Apr', attendance: 88, previousYear: 87, target: 95 },
+  { month: 'May', attendance: 86, previousYear: 85, target: 95 },
+  { month: 'Jun', attendance: 94, previousYear: 92, target: 95 },
+  { month: 'Jul', attendance: 97, previousYear: 94, target: 95 },
+  { month: 'Aug', attendance: 96, previousYear: 93, target: 95 },
+  { month: 'Sep', attendance: 93, previousYear: 91, target: 95 },
+  { month: 'Oct', attendance: 90, previousYear: 88, target: 95 },
+  { month: 'Nov', attendance: 89, previousYear: 87, target: 95 },
+  { month: 'Dec', attendance: 87, previousYear: 85, target: 95 },
+];
+
+const enrollmentData = [
+  { year: '2020', students: 450, male: 220, female: 230, international: 45 },
+  { year: '2021', students: 520, male: 250, female: 270, international: 62 },
+  { year: '2022', students: 580, male: 280, female: 300, international: 75 },
+  { year: '2023', students: 620, male: 300, female: 320, international: 85 },
+  { year: '2024', students: 680, male: 330, female: 350, international: 95 },
+];
+
 const teacherPerformanceData = [
-  { name: "Mr. Johnson", rating: 4.7, classAvg: 85, attendance: 98 },
-  { name: "Mrs. Davis", rating: 4.5, classAvg: 82, attendance: 95 },
-  { name: "Mr. Smith", rating: 4.8, classAvg: 88, attendance: 99 },
-  { name: "Ms. Wilson", rating: 4.6, classAvg: 84, attendance: 97 },
-  { name: "Mrs. Brown", rating: 4.4, classAvg: 80, attendance: 94 },
-  { name: "Mr. Garcia", rating: 4.9, classAvg: 90, attendance: 100 },
-  { name: "Ms. Lee", rating: 4.3, classAvg: 79, attendance: 93 },
-];
-
-const enrollmentTrendData = [
-  { month: "Jan", students: 520, capacity: 600 },
-  { month: "Feb", students: 535, capacity: 600 },
-  { month: "Mar", students: 550, capacity: 600 },
-  { month: "Apr", students: 565, capacity: 600 },
-  { month: "May", students: 575, capacity: 600 },
-  { month: "Jun", students: 560, capacity: 600 },
-  { month: "Jul", students: 545, capacity: 600 },
-  { month: "Aug", students: 580, capacity: 600 },
-  { month: "Sep", students: 590, capacity: 600 },
-  { month: "Oct", students: 585, capacity: 600 },
-  { month: "Nov", students: 575, capacity: 600 },
-  { month: "Dec", students: 570, capacity: 600 },
-];
-
-const attendanceTrendData = [
-  { month: "Jan", average: 92 },
-  { month: "Feb", average: 94 },
-  { month: "Mar", average: 91 },
-  { month: "Apr", average: 88 },
-  { month: "May", average: 90 },
-  { month: "Jun", average: 85 },
-  { month: "Jul", average: 80 },
-  { month: "Aug", average: 87 },
-  { month: "Sep", average: 93 },
-  { month: "Oct", average: 95 },
-  { month: "Nov", average: 92 },
-  { month: "Dec", average: 88 },
+  { 
+    id: 1,
+    name: 'Ms. Johnson', 
+    rating: 4.8, 
+    subjects: 'Math', 
+    students: 120,
+    experience: 8,
+    qualifications: 'Ph.D',
+    feedbackScore: 92,
+    improvementRate: 4.2
+  },
+  { 
+    id: 2,
+    name: 'Mr. Smith', 
+    rating: 4.5, 
+    subjects: 'Science', 
+    students: 110,
+    experience: 6,
+    qualifications: 'M.Sc',
+    feedbackScore: 88,
+    improvementRate: 3.8
+  },
+  { 
+    id: 3,
+    name: 'Mrs. Davis', 
+    rating: 4.7, 
+    subjects: 'English', 
+    students: 115,
+    experience: 10,
+    qualifications: 'M.A',
+    feedbackScore: 90,
+    improvementRate: 4.0
+  },
+  { 
+    id: 4,
+    name: 'Mr. Wilson', 
+    rating: 4.6, 
+    subjects: 'History', 
+    students: 105,
+    experience: 7,
+    qualifications: 'Ph.D',
+    feedbackScore: 89,
+    improvementRate: 3.9
+  },
+  { 
+    id: 5,
+    name: 'Ms. Brown', 
+    rating: 4.9, 
+    subjects: 'Art', 
+    students: 90,
+    experience: 12,
+    qualifications: 'M.F.A',
+    feedbackScore: 95,
+    improvementRate: 4.5
+  },
 ];
 
 const subjectPerformanceData = [
-  { name: "Math", avgScore: 82 },
-  { name: "Science", avgScore: 78 },
-  { name: "English", avgScore: 85 },
-  { name: "History", avgScore: 79 },
-  { name: "Art", avgScore: 88 },
-  { name: "Music", avgScore: 90 },
-  { name: "P.E.", avgScore: 87 },
+  { name: 'Math', average: 78, passingRate: 92, improvement: 3.2, difficulty: 4.2 },
+  { name: 'Science', average: 82, passingRate: 94, improvement: 2.8, difficulty: 4.0 },
+  { name: 'English', average: 75, passingRate: 90, improvement: 2.5, difficulty: 3.5 },
+  { name: 'History', average: 80, passingRate: 93, improvement: 3.0, difficulty: 3.8 },
+  { name: 'Art', average: 88, passingRate: 98, improvement: 2.0, difficulty: 2.5 },
 ];
 
-const genderDistributionData = [
-  { name: "Male", value: 320 },
-  { name: "Female", value: 270 }
+const gradeDistributionData = [
+  { name: 'A', value: 25, color: '#4CAF50' },
+  { name: 'B', value: 35, color: '#2196F3' },
+  { name: 'C', value: 25, color: '#FFC107' },
+  { name: 'D', value: 10, color: '#FF9800' },
+  { name: 'F', value: 5, color: '#F44336' },
 ];
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const studentDemographicsData = [
+  { name: 'Male', value: 52 },
+  { name: 'Female', value: 48 },
+];
 
-// Card component for report sections
-const ReportCard = ({ title, icon, children }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold flex items-center">
-          {icon}
-          <span className="ml-2">{title}</span>
-        </h2>
-      </div>
-      {children}
-    </div>
-  );
-};
+const studentAgeDistributionData = [
+  { age: '5-8', count: 120 },
+  { age: '9-12', count: 240 },
+  { age: '13-15', count: 180 },
+  { age: '16-18', count: 140 },
+];
 
-// Tab component for switching between report types
-const TabButton = ({ active, icon, label, onClick }) => {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center px-4 py-2 rounded-md text-sm font-medium mr-2 ${
-        active 
-          ? "bg-indigo-100 text-indigo-700" 
-          : "bg-white text-gray-600 hover:bg-gray-50"
-      }`}
-    >
-      {icon}
-      <span className="ml-2">{label}</span>
-    </button>
-  );
-};
+const COLORS = ['#4CAF50', '#2196F3', '#FFC107', '#FF9800', '#F44336', '#9C27B0', '#3F51B5'];
 
-// Export button component
-const ExportButton = ({ label, onClick }) => {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition duration-150"
-    >
-      <Download className="h-4 w-4 mr-1.5" />
-      {label}
-    </button>
-  );
-};
-
-// Dropdown filter component
-const FilterDropdown = ({ label, options, value, onChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const SchoolReports: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [exportFormat, setExportFormat] = useState<string>('csv');
+  const [dateRange, setDateRange] = useState<string>('year');
+  const [selectedTeacher, setSelectedTeacher] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [chartType, setChartType] = useState<string>('bar');
+  const [showFilters, setShowFilters] = useState<boolean>(false);
   
-  return (
-    <div className="relative inline-block">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition duration-150"
-      >
-        <Filter className="h-4 w-4 mr-1.5" />
-        {label}: {value}
-        <ChevronDown className="h-4 w-4 ml-1.5" />
-      </button>
+  // Simulate data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Calculate summary stats
+  const summaryStats = useMemo(() => {
+    const avgAttendance = attendanceData.reduce((sum, item) => sum + item.attendance, 0) / attendanceData.length;
+    const totalStudents = enrollmentData[enrollmentData.length - 1].students;
+    const avgRating = teacherPerformanceData.reduce((sum, item) => sum + item.rating, 0) / teacherPerformanceData.length;
+    const avgPerformance = subjectPerformanceData.reduce((sum, item) => sum + item.average, 0) / subjectPerformanceData.length;
+    
+    return {
+      avgAttendance: avgAttendance.toFixed(1),
+      totalStudents,
+      teacherCount: teacherPerformanceData.length,
+      avgRating: avgRating.toFixed(1),
+      avgPerformance: avgPerformance.toFixed(1),
+      passingGrades: gradeDistributionData.slice(0, 3).reduce((sum, item) => sum + item.value, 0)
+    };
+  }, []);
+
+  // Function to export data
+  const exportData = () => {
+    // Function to convert data to CSV
+    const convertToCSV = (data: any[]) => {
+      const headers = Object.keys(data).join(',');
+      const rows = data.map(item => Object.values(item).join(','));
+      return [headers, ...rows].join('\n');
+    };
+
+    let dataToExport;
+    let filename;
+
+    switch (activeTab) {
+      case 'performance':
+        dataToExport = teacherPerformanceData;
+        filename = 'teacher-performance';
+        break;
+      case 'attendance':
+        dataToExport = attendanceData;
+        filename = 'attendance-trends';
+        break;
+      case 'enrollment':
+        dataToExport = enrollmentData;
+        filename = 'enrollment-data';
+        break;
+      default:
+        dataToExport = teacherPerformanceData;
+        filename = 'school-data';
+    }
+
+    if (exportFormat === 'csv') {
+      const csvData = convertToCSV(dataToExport);
+      const blob = new Blob([csvData], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('hidden', '');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `${filename}.csv`);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else if (exportFormat === 'pdf') {
+      const doc = new jsPDF();
       
-      {isOpen && (
-        <div className="absolute z-10 mt-1 w-40 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
-          {options.map((option) => (
-            <button
-              key={option}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-              className={`block w-full text-left px-4 py-2 text-sm ${
-                value === option ? "bg-indigo-50 text-indigo-700" : "text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Main Reports component
-const ReportsAnalytics = () => {
-  const [activeTab, setActiveTab] = useState("performance");
-  const [timeFrame, setTimeFrame] = useState("This Year");
-  const [gradeFilter, setGradeFilter] = useState("All Grades");
-
-  // Mock function to export data
-  const exportData = (format) => {
-    alert(`Exporting data in ${format} format. This would trigger a real download in a production environment.`);
+      // Add title
+      doc.setFontSize(18);
+      doc.text(`School Report: ${filename}`, 14, 22);
+      
+      // Add date
+      doc.setFontSize(11);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+      
+      // Add table
+      const tableColumn = Object.keys(dataToExport);
+      const tableRows = dataToExport.map(item => Object.values(item));
+      
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40,
+      });
+      
+      doc.save(`${filename}.pdf`);
+    }
   };
 
-  // Mock function to refresh data
-  const refreshData = () => {
-    alert("Refreshing data... In a real application, this would fetch the latest data from the server.");
-  };
-
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Reports & Analytics</h1>
-        <p className="text-gray-600">Comprehensive insights into school performance, enrollment trends, and more.</p>
-      </div>
-
-      {/* Filters and controls */}
-      <div className="flex flex-wrap items-center justify-between mb-6 gap-3">
-        <div className="flex flex-wrap gap-2">
-          <TabButton
-            active={activeTab === "performance"}
-            icon={<Award className="h-4 w-4" />}
-            label="Performance"
-            onClick={() => setActiveTab("performance")}
-          />
-          <TabButton
-            active={activeTab === "enrollment"}
-            icon={<Users className="h-4 w-4" />}
-            label="Enrollment & Attendance"
-            onClick={() => setActiveTab("enrollment")}
-          />
-          <TabButton
-            active={activeTab === "export"}
-            icon={<FileText className="h-4 w-4" />}
-            label="Export Data"
-            onClick={() => setActiveTab("export")}
-          />
-        </div>
-        
-        <div className="flex flex-wrap items-center gap-2">
-          <FilterDropdown
-            label="Time Frame"
-            options={["This Month", "This Quarter", "This Year", "All Time"]}
-            value={timeFrame}
-            onChange={setTimeFrame}
-          />
+  // Dashboard component
+  const Dashboard = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="lg:col-span-3"
+      >
+        <StyledCard>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">School Performance Dashboard</h2>
           
-          <FilterDropdown
-            label="Grade"
-            options={["All Grades", "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5"]}
-            value={gradeFilter}
-            onChange={setGradeFilter}
-          />
-          
-          <button
-            onClick={refreshData}
-            className="flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition duration-150"
-          >
-            <RefreshCw className="h-4 w-4 mr-1.5" />
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      {/* Performance Tab Content */}
-      {activeTab === "performance" && (
-        <div>
-          {/* Teacher Performance */}
-          <ReportCard 
-            title="Teacher Performance" 
-            icon={<Award className="h-5 w-5 text-indigo-600" />}
-          >
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-4">
-                Average rating, class performance, and attendance rates for each teacher.
-              </p>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={teacherPerformanceData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="rating" fill="#8884d8" name="Rating (out of 5)" />
-                    <Bar dataKey="classAvg" fill="#82ca9d" name="Class Average (%)" />
-                    <Bar dataKey="attendance" fill="#ffc658" name="Attendance Rate (%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
+              <p className="text-sm text-blue-600 font-medium">Average Attendance</p>
+              <p className="text-2xl font-bold">{summaryStats.avgAttendance}%</p>
             </div>
             
-            <div className="flex justify-end">
-              <ExportButton label="Export Data" onClick={() => exportData("CSV")} />
-            </div>
-          </ReportCard>
-
-          {/* Subject Performance */}
-          <ReportCard 
-            title="Subject Performance" 
-            icon={<BarChart2 className="h-5 w-5 text-green-600" />}
-          >
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-4">
-                Average scores across different subjects in the curriculum.
-              </p>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={subjectPerformanceData}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                      layout="vertical"
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" domain={[0, 100]} />
-                      <YAxis dataKey="name" type="category" width={80} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="avgScore" fill="#82ca9d" name="Average Score (%)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                
-                <div>
-                  <h3 className="text-base font-medium mb-3">Key Insights</h3>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-start">
-                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
-                      <span>Music and Art have the highest average scores, indicating strong performance in creative subjects.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="inline-block w-2 h-2 rounded-full bg-yellow-500 mt-1.5 mr-2"></span>
-                      <span>Science has the lowest average score. Consider reviewing teaching methods or providing additional resources.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
-                      <span>English scores are above average, suggesting effective literacy programs.</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+            <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
+              <p className="text-sm text-green-600 font-medium">Total Students</p>
+              <p className="text-2xl font-bold">{summaryStats.totalStudents}</p>
             </div>
             
-            <div className="flex justify-end">
-              <ExportButton label="Export Data" onClick={() => exportData("CSV")} />
-            </div>
-          </ReportCard>
-        </div>
-      )}
-
-      {/* Enrollment & Attendance Tab Content */}
-      {activeTab === "enrollment" && (
-        <div>
-          {/* Enrollment Trends */}
-          <ReportCard 
-            title="Enrollment Trends" 
-            icon={<Users className="h-5 w-5 text-blue-600" />}
-          >
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-4">
-                Monthly enrollment numbers compared to total capacity.
-              </p>
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={enrollmentTrendData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Area type="monotone" dataKey="capacity" stroke="#8884d8" fill="#8884d8" fillOpacity={0.1} name="Total Capacity" />
-                    <Area type="monotone" dataKey="students" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} name="Enrolled Students" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="bg-purple-50 rounded-lg p-4 border-l-4 border-purple-500">
+              <p className="text-sm text-purple-600 font-medium">Teacher Rating</p>
+              <p className="text-2xl font-bold">{summaryStats.avgRating}/5</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="text-blue-800 text-sm font-medium mb-1">Current Enrollment</h3>
-                <p className="text-2xl font-bold text-blue-900">570</p>
-                <p className="text-xs text-blue-700 mt-1">95% of total capacity</p>
-              </div>
-              
-              <div className="bg-green-50 p-4 rounded-lg">
-                <h3 className="text-green-800 text-sm font-medium mb-1">Growth Rate</h3>
-                <p className="text-2xl font-bold text-green-900">+9.6%</p>
-                <p className="text-xs text-green-700 mt-1">Compared to last year</p>
-              </div>
-              
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <h3 className="text-purple-800 text-sm font-medium mb-1">Available Capacity</h3>
-                <p className="text-2xl font-bold text-purple-900">30</p>
-                <p className="text-xs text-purple-700 mt-1">Seats remaining</p>
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <ExportButton label="Export Data" onClick={() => exportData("CSV")} />
-            </div>
-          </ReportCard>
-
-          {/* Attendance Trends */}
-          <ReportCard 
-            title="Attendance Trends" 
-            icon={<Calendar className="h-5 w-5 text-orange-600" />}
-          >
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-4">
-                Monthly average attendance rate across all classes.
-              </p>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={attendanceTrendData}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis domain={[70, 100]} />
-                      <Tooltip />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="average" 
-                        stroke="#ff7300" 
-                        strokeWidth={2}
-                        name="Attendance Rate (%)" 
-                        activeDot={{ r: 8 }} 
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-orange-50 p-4 rounded-lg">
-                    <h3 className="text-orange-800 text-sm font-medium mb-1">Average Attendance</h3>
-                    <p className="text-2xl font-bold text-orange-900">89.5%</p>
-                    <p className="text-xs text-orange-700 mt-1">Across all grades</p>
-                  </div>
-                  
-                  <div className="bg-red-50 p-4 rounded-lg">
-                    <h3 className="text-red-800 text-sm font-medium mb-1">Absence Rate</h3>
-                    <p className="text-2xl font-bold text-red-900">10.5%</p>
-                    <p className="text-xs text-red-700 mt-1">Includes excused absences</p>
-                  </div>
-                  
-                  <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-2">Key Observations</h3>
-                    <ul className="space-y-1 text-sm">
-                      <li className="flex items-start">
-                        <span className="inline-block w-2 h-2 rounded-full bg-orange-500 mt-1.5 mr-2"></span>
-                        <span>Significant drop in attendance during summer months (Jun-Jul)</span>
-                      </li>
-                      <li className="flex items-start">
-                        <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
-                        <span>Peak attendance in October (95%)</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <ExportButton label="Export Data" onClick={() => exportData("CSV")} />
-            </div>
-          </ReportCard>
-
-          {/* Student Demographics */}
-          <ReportCard 
-            title="Student Demographics" 
-            icon={<Users className="h-5 w-5 text-purple-600" />}
-          >
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-4">
-                Breakdown of student population by gender and grade level.
-              </p>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={genderDistributionData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {genderDistributionData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                
-                <div>
-                  <h3 className="text-sm font-medium mb-3">Grade Distribution</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span>Grade 1</span>
-                        <span>120 students (21%)</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: "21%" }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span>Grade 2</span>
-                        <span>105 students (18%)</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-green-500 h-2 rounded-full" style={{ width: "18%" }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span>Grade 3</span>
-                        <span>118 students (21%)</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-purple-500 h-2 rounded-full" style={{ width: "21%" }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span>Grade 4</span>
-                        <span>125 students (22%)</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-yellow-500 h-2 rounded-full" style={{ width: "22%" }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span>Grade 5</span>
-                        <span>102 students (18%)</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-red-500 h-2 rounded-full" style={{ width: "18%" }}></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <ExportButton label="Export Data" onClick={() => exportData("CSV")} />
-            </div>
-          </ReportCard>
-        </div>
-      )}
-
-      {/* Export Data Tab Content */}
-      {activeTab === "export" && (
-        <ReportCard 
-          title="Export School Data" 
-          icon={<Download className="h-5 w-5 text-indigo-600" />}
-        >
-          <div className="mb-6">
-            <p className="text-sm text-gray-500 mb-4">
-              Export various reports and datasets for further analysis or record-keeping.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-medium text-gray-800 mb-2 flex items-center">
-                  <Users className="h-4 w-4 mr-2 text-blue-600" />
-                  Student Records
-                </h3>
-                <p className="text-sm text-gray-500 mb-3">
-                  Complete student enrollment data, demographics, and contact information.
-                </p>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => exportData("CSV")}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm hover:bg-blue-100 transition duration-150"
-                  >
-                    CSV
-                  </button>
-                  <button
-                    onClick={() => exportData("Excel")}
-                    className="px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-sm hover:bg-green-100 transition duration-150"
-                  >
-                    Excel
-                  </button>
-                  <button
-                    onClick={() => exportData("PDF")}
-                    className="px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-sm hover:bg-red-100 transition duration-150"
-                  >
-                    PDF
-                  </button>
-                </div>
-              </div>
-              
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-medium text-gray-800 mb-2 flex items-center">
-                  <Award className="h-4 w-4 mr-2 text-purple-600" />
-                  Academic Performance
-                </h3>
-                <p className="text-sm text-gray-500 mb-3">
-                  Detailed reports on student grades, test scores, and subject performance.
-                </p>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => exportData("CSV")}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm hover:bg-blue-100 transition duration-150"
-                  >
-                    CSV
-                  </button>
-                  <button
-                    onClick={() => exportData("Excel")}
-                    className="px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-sm hover:bg-green-100 transition duration-150"
-                  >
-                    Excel
-                  </button>
-                  <button
-                    onClick={() => exportData("PDF")}
-                    className="px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-sm hover:bg-red-100 transition duration-150"
-                  >
-                    PDF
-                  </button>
-                </div>
-              </div>
-              
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-medium text-gray-800 mb-2 flex items-center">
-                  <Calendar className="h-4 w-4 mr-2 text-orange-600" />
-                  Attendance Records
-                </h3>
-                <p className="text-sm text-gray-500 mb-3">
-                  Daily, weekly, and monthly attendance logs for all classes and grades.
-                </p>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => exportData("CSV")}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm hover:bg-blue-100 transition duration-150"
-                  >
-                    CSV
-                  </button>
-                  <button
-                    onClick={() => exportData("Excel")}
-                    className="px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-sm hover:bg-green-100 transition duration-150"
-                  >
-                    Excel
-                  </button>
-                  <button
-                    onClick={() => exportData("PDF")}
-                    className="px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-sm hover:bg-red-100 transition duration-150"
-                  >
-                    PDF
-                  </button>
-                </div>
-              </div>
-              
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-medium text-gray-800 mb-2 flex items-center">
-                  <TrendingUp className="h-4 w-4 mr-2 text-green-600" />
-                  Financial Reports
-                </h3>
-                <p className="text-sm text-gray-500 mb-3">
-                  Budget summaries, expense reports, and financial forecasts.
-                </p>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => exportData("CSV")}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm hover:bg-blue-100 transition duration-150"
-                  >
-                    CSV
-                  </button>
-                  <button
-                    onClick={() => exportData("Excel")}
-                    className="px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-sm hover:bg-green-100 transition duration-150"
-                  >
-                    Excel
-                  </button>
-                  <button
-                    onClick={() => exportData("PDF")}
-                    className="px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-sm hover:bg-red-100 transition duration-150"
-                  >
-                    PDF
-                  </button>
-                </div>
-              </div>
+            <div className="bg-amber-50 rounded-lg p-4 border-l-4 border-amber-500">
+              <p className="text-sm text-amber-600 font-medium">Average Performance</p>
+              <p className="text-2xl font-bold">{summaryStats.avgPerformance}%</p>
             </div>
           </div>
-          
-          <div className="border-t border-gray-200 pt-4">
-            <h3 className="font-medium text-gray-800 mb-3">Schedule Automated Reports</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Set up recurring reports to be automatically generated and sent to specified email addresses.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
-                <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                  <option>Student Performance</option>
-                  <option>Attendance Summary</option>
-                  <option>Financial Overview</option>
-                  <option>Enrollment Statistics</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
-                <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                  <option>Daily</option>
-                  <option>Weekly</option>
-                  <option>Monthly</option>
-                  <option>Quarterly</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Format</label>
-                <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                  <option>PDF</option>
-                  <option>Excel</option>
-                  <option>CSV</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email Recipients (comma separated)</label>
-              <input 
-                type="text" 
-                placeholder="principal@school.edu, admin@school.edu" 
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-            
-            <div className="mt-4 flex justify-end">
-              <button className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 transition duration-150">
-                Schedule Report
+        </StyledCard>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="lg:col-span-2"
+      >
+        <StyledCard>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-700">Attendance Trends</h3>
+            <div className="flex space-x-2">
+              <button 
+                className={`px-2 py-1 text-xs rounded ${chartType === 'line' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setChartType('line')}
+              >
+                Line
+              </button>
+              <button 
+                className={`px-2 py-1 text-xs rounded ${chartType === 'bar' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setChartType('bar')}
+              >
+                Bar
+              </button>
+              <button 
+                className={`px-2 py-1 text-xs rounded ${chartType === 'area' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setChartType('area')}
+              >
+                Area
               </button>
             </div>
           </div>
-        </ReportCard>
-      )}
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              {chartType === 'line' ? (
+                <LineChart
+                  data={attendanceData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="month" stroke="#888" />
+                  <YAxis domain={[60, 100]} stroke="#888" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="attendance" stroke="#4CAF50" strokeWidth={2} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="previousYear" stroke="#2196F3" strokeWidth={2} strokeDasharray="5 5" />
+                  <Line type="monotone" dataKey="target" stroke="#F44336" strokeWidth={2} />
+                </LineChart>
+              ) : chartType === 'bar' ? (
+                <BarChart
+                  data={attendanceData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="month" stroke="#888" />
+                  <YAxis domain={[60, 100]} stroke="#888" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                  />
+                  <Legend />
+                  <Bar dataKey="attendance" fill="#4CAF50" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="previousYear" fill="#2196F3" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              ) : (
+                <AreaChart
+                  data={attendanceData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="month" stroke="#888" />
+                  <YAxis domain={[60, 100]} stroke="#888" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                  />
+                  <Legend />
+                  <Area type="monotone" dataKey="attendance" stroke="#4CAF50" fill="#4CAF50" fillOpacity={0.2} />
+                  <Area type="monotone" dataKey="previousYear" stroke="#2196F3" fill="#2196F3" fillOpacity={0.1} />
+                </AreaChart>
+              )}
+            </ResponsiveContainer>
+          </div>
+        </StyledCard>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <StyledCard>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Grade Distribution</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={gradeDistributionData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {gradeDistributionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => `${value}%`}
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                />
+                <Legend 
+                  layout="vertical" 
+                  verticalAlign="middle" 
+                  align="right"
+                  formatter={(value, entry, index) => (
+                    <span className="text-gray-800">{value} ({gradeDistributionData[index].value}%)</span>
+                  )}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </StyledCard>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="lg:col-span-3"
+      >
+        <StyledCard>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Subject Performance Analysis</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={subjectPerformanceData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="name" stroke="#888" />
+                <YAxis yAxisId="left" stroke="#888" />
+                <YAxis yAxisId="right" orientation="right" stroke="#888" domain={[0, 5]} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                />
+                <Legend />
+                <Bar yAxisId="left" dataKey="average" fill="#8884d8" radius={[4, 4, 0, 0]} name="Average Score (%)" />
+                <Bar yAxisId="left" dataKey="passingRate" fill="#82ca9d" radius={[4, 4, 0, 0]} name="Passing Rate (%)" />
+                <Line yAxisId="right" type="monotone" dataKey="difficulty" stroke="#ff7300" strokeWidth={2} name="Difficulty (1-5)" />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </StyledCard>
+      </motion.div>
+    </div>
+  );
+
+  // Performance Reports component
+  const PerformanceReports = () => {
+    const selectedTeacherData = teacherPerformanceData.find(t => t.id === selectedTeacher);
+    
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-3"
+        >
+          <StyledCard>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">School & Teacher Performance</h2>
+              <div className="flex space-x-2">
+                <button 
+                  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                  onClick={() => setSelectedTeacher(null)}
+                >
+                  View All
+                </button>
+              </div>
+            </div>
+            
+            {selectedTeacher ? (
+              <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-bold text-blue-800">{selectedTeacherData?.name}</h3>
+                    <p className="text-blue-600">Subject: {selectedTeacherData?.subjects}</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <p className="text-sm text-gray-500">Rating</p>
+                    <p className="text-2xl font-bold text-blue-600">{selectedTeacherData?.rating}/5</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <p className="text-sm text-gray-500">Experience</p>
+                    <p className="text-xl font-bold">{selectedTeacherData?.experience} years</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <p className="text-sm text-gray-500">Students</p>
+                    <p className="text-xl font-bold">{selectedTeacherData?.students}</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg shadow-sm">
+                    <p className="text-sm text-gray-500">Feedback Score</p>
+                    <p className="text-xl font-bold">{selectedTeacherData?.feedbackScore}%</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-2">Teacher Ratings</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={teacherPerformanceData}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="name" stroke="#888" />
+                      <YAxis domain={[0, 5]} stroke="#888" />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                      />
+                      <Legend />
+                      <Bar 
+                        dataKey="rating" 
+                        fill="#8884d8" 
+                        name="Teacher Rating (out of 5)" 
+                        radius={[4, 4, 0, 0]}
+                        onClick={(data) => setSelectedTeacher(data.id)} 
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+            
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-2">Subject Performance</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart outerRadius={90} data={subjectPerformanceData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="name" />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                    <Radar name="Average Score" dataKey="average" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                    <Radar name="Passing Rate" dataKey="passingRate" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+                    <Legend />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-2">Grade Distribution</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={gradeDistributionData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {gradeDistributionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => `${value}%`} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Teacher Performance Details</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white rounded-lg overflow-hidden">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="py-3 px-4 text-left font-semibold text-gray-700">Teacher</th>
+                      <th className="py-3 px-4 text-left font-semibold text-gray-700">Rating</th>
+                      <th className="py-3 px-4 text-left font-semibold text-gray-700">Subjects</th>
+                      <th className="py-3 px-4 text-left font-semibold text-gray-700">Students</th>
+                      <th className="py-3 px-4 text-left font-semibold text-gray-700">Experience</th>
+                      <th className="py-3 px-4 text-left font-semibold text-gray-700">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teacherPerformanceData.map((teacher, index) => (
+                      <tr 
+                        key={index} 
+                        className={`
+                          border-b border-gray-200 hover:bg-blue-50 transition-colors
+                          ${selectedTeacher === teacher.id ? 'bg-blue-50' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                        `}
+                      >
+                        <td className="py-3 px-4">{teacher.name}</td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center">
+                            <span className="mr-2">{teacher.rating}</span>
+                            <div className="w-20 h-2 bg-gray-200 rounded-full">
+                              <div 
+                                className="h-full bg-blue-500 rounded-full" 
+                                style={{ width: `${(teacher.rating / 5) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">{teacher.subjects}</td>
+                        <td className="py-3 px-4">{teacher.students}</td>
+                        <td className="py-3 px-4">{teacher.experience} years</td>
+                        <td className="py-3 px-4">
+                          <button 
+                            onClick={() => setSelectedTeacher(teacher.id)}
+                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </StyledCard>
+        </motion.div>
+      </div>
+    );
+  };
+
+  // Attendance Reports component
+  const AttendanceReports = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="lg:col-span-2"
+      >
+        <StyledCard>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">Attendance Analysis</h2>
+            <div className="flex space-x-2">
+            <select 
+                className="px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+              >
+                <option value="year">Past Year</option>
+                <option value="semester">Past Semester</option>
+                <option value="quarter">Past Quarter</option>
+                <option value="month">Past Month</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={attendanceData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="month" stroke="#888" />
+                <YAxis domain={[60, 100]} stroke="#888" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="previousYear" fill="#2196F3" stroke="#2196F3" fillOpacity={0.3} name="Previous Year %" />
+                <Bar dataKey="attendance" barSize={20} fill="#4CAF50" name="Current Year %" radius={[4, 4, 0, 0]} />
+                <Line type="monotone" dataKey="target" stroke="#FF5722" strokeWidth={2} name="Target %" />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+          
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+              <p className="text-sm text-green-700 font-medium">Average Attendance</p>
+              <p className="text-2xl font-bold text-green-800">{summaryStats.avgAttendance}%</p>
+              <p className="text-xs text-green-600 mt-1">
+                {Number(summaryStats.avgAttendance) > 90 ? '↑ Above target' : '↓ Below target'}
+              </p>
+            </div>
+            
+            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+              <p className="text-sm text-blue-700 font-medium">Best Month</p>
+              <p className="text-2xl font-bold text-blue-800">
+                {attendanceData.reduce((prev, current) => (prev.attendance > current.attendance) ? prev : current).month}
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                {attendanceData.reduce((prev, current) => (prev.attendance > current.attendance) ? prev : current).attendance}% attendance
+              </p>
+            </div>
+            
+            <div className="bg-amber-50 p-4 rounded-lg border-l-4 border-amber-500">
+              <p className="text-sm text-amber-700 font-medium">Lowest Month</p>
+              <p className="text-2xl font-bold text-amber-800">
+                {attendanceData.reduce((prev, current) => (prev.attendance < current.attendance) ? prev : current).month}
+              </p>
+              <p className="text-xs text-amber-600 mt-1">
+                {attendanceData.reduce((prev, current) => (prev.attendance < current.attendance) ? prev : current).attendance}% attendance
+              </p>
+            </div>
+          </div>
+        </StyledCard>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <StyledCard>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Attendance by Student Demographics</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={studentDemographicsData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  fill="#8884d8"
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                >
+                  {studentDemographicsData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => `${value}%`} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-4 text-sm text-gray-600">
+            <p>Male students show a slightly higher attendance rate compared to female students this semester.</p>
+          </div>
+        </StyledCard>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <StyledCard>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Attendance by Age Group</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={studentAgeDistributionData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="age" stroke="#888" />
+                <YAxis stroke="#888" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                />
+                <Legend />
+                <Bar dataKey="count" name="Number of Students" fill="#FF9800" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-4 text-sm text-gray-600">
+            <p>The 9-12 age group represents our largest student demographic with the highest overall attendance rates.</p>
+          </div>
+        </StyledCard>
+      </motion.div>
+    </div>
+  );
+
+  // Enrollment Reports component
+  const EnrollmentReports = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="lg:col-span-2"
+      >
+        <StyledCard>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">Enrollment Trends</h2>
+            <div className="flex space-x-2">
+              <button 
+                onClick={() => setShowFilters(!showFilters)}
+                className="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors text-sm flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Filters
+              </button>
+            </div>
+          </div>
+          
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="mb-6 overflow-hidden"
+              >
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Year Range</label>
+                      <select className="w-full p-2 border border-gray-300 rounded">
+                        <option>All Years</option>
+                        <option>Last 3 Years</option>
+                        <option>Last 5 Years</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Student Type</label>
+                      <select className="w-full p-2 border border-gray-300 rounded">
+                        <option>All Students</option>
+                        <option>Domestic</option>
+                        <option>International</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                      <select className="w-full p-2 border border-gray-300 rounded">
+                        <option>All</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex justify-end">
+                    <button className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                      Apply Filters
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={enrollmentData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="year" stroke="#888" />
+                <YAxis stroke="#888" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                />
+                <Legend />
+                <Bar dataKey="students" name="Total Students" fill="#3F51B5" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="male" name="Male" stackId="gender" fill="#2196F3" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="female" name="Female" stackId="gender" fill="#E91E63" radius={[0, 0, 0, 0]} />
+                <Line type="monotone" dataKey="international" name="International" stroke="#FF9800" strokeWidth={2} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+          
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
+              <p className="text-sm text-indigo-700 font-medium">Total Students</p>
+              <p className="text-2xl font-bold text-indigo-800">{enrollmentData[enrollmentData.length - 1].students}</p>
+              <p className="text-xs text-indigo-600 mt-1">
+                ↑ {((enrollmentData[enrollmentData.length - 1].students - enrollmentData.students) / enrollmentData.students * 100).toFixed(1)}% growth
+              </p>
+            </div>
+            
+            <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+              <p className="text-sm text-blue-700 font-medium">Male Students</p>
+              <p className="text-2xl font-bold text-blue-800">{enrollmentData[enrollmentData.length - 1].male}</p>
+              <p className="text-xs text-blue-600 mt-1">
+                {((enrollmentData[enrollmentData.length - 1].male / enrollmentData[enrollmentData.length - 1].students) * 100).toFixed(1)}% of total
+              </p>
+            </div>
+            
+            <div className="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
+              <p className="text-sm text-pink-700 font-medium">Female Students</p>
+              <p className="text-2xl font-bold text-pink-800">{enrollmentData[enrollmentData.length - 1].female}</p>
+              <p className="text-xs text-pink-600 mt-1">
+                {((enrollmentData[enrollmentData.length - 1].female / enrollmentData[enrollmentData.length - 1].students) * 100).toFixed(1)}% of total
+              </p>
+            </div>
+            
+            <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+              <p className="text-sm text-orange-700 font-medium">International</p>
+              <p className="text-2xl font-bold text-orange-800">{enrollmentData[enrollmentData.length - 1].international}</p>
+              <p className="text-xs text-orange-600 mt-1">
+                {((enrollmentData[enrollmentData.length - 1].international / enrollmentData[enrollmentData.length - 1].students) * 100).toFixed(1)}% of total
+              </p>
+            </div>
+          </div>
+        </StyledCard>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <StyledCard>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Enrollment Growth Trend</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={enrollmentData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="year" stroke="#888" />
+                <YAxis stroke="#888" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="students" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-4 text-sm text-gray-600">
+            <p>Our enrollment has shown consistent growth over the past 5 years, with an average annual increase of 10%.</p>
+          </div>
+        </StyledCard>
+      </motion.div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <StyledCard>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Gender Distribution Trend</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={enrollmentData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="year" stroke="#888" />
+                <YAxis stroke="#888" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', border: 'none' }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="male" stackId="1" stroke="#2196F3" fill="#2196F3" fillOpacity={0.6} />
+                <Area type="monotone" dataKey="female" stackId="1" stroke="#E91E63" fill="#E91E63" fillOpacity={0.6} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-4 text-sm text-gray-600">
+            <p>We maintain a balanced gender distribution with a slight increase in female students over recent years.</p>
+          </div>
+        </StyledCard>
+      </motion.div>
+    </div>
+  );
+
+  // Render different report sections based on active tab
+  const renderReportContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      );
+    }
+    
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'performance':
+        return <PerformanceReports />;
+      case 'attendance':
+        return <AttendanceReports />;
+      case 'enrollment':
+        return <EnrollmentReports />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">School Analytics Dashboard</h1>
+          
+          <div className="flex flex-wrap gap-2">
+            <div className="relative">
+              <select 
+                className="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                value={exportFormat}
+                onChange={(e) => setExportFormat(e.target.value)}
+              >
+                <option value="csv">Export as CSV</option>
+                <option value="pdf">Export as PDF</option>
+              </select>
+            </div>
+            <button 
+              onClick={exportData}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export Report
+            </button>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-1 mb-6">
+          <div className="flex flex-wrap">
+            <button 
+              className={`px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeTab === 'dashboard' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              Dashboard
+            </button>
+            <button 
+              className={`px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeTab === 'performance' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('performance')}
+            >
+              Performance
+            </button>
+            <button 
+              className={`px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeTab === 'attendance' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('attendance')}
+            >
+              Attendance
+            </button>
+            <button 
+              className={`px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeTab === 'enrollment' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+              onClick={() => setActiveTab('enrollment')}
+            >
+              Enrollment
+            </button>
+          </div>
+        </div>
+        
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {renderReportContent()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
 
-export default ReportsAnalytics;
+export default SchoolReports;

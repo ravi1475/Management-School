@@ -16,7 +16,8 @@ import ManageSchools from './components/Admin/ManageSchools';
 import ManageUsers from './components/Admin/ManageUser';
 import StaffDirectory from './components/Admin/StaffDirectory';
 import StaffDocumentManagement from "./components/Admin/StaffDocumentManagement";
-
+import SchoolReports from "./components/Admin/Reports";
+import SchoolCalendar from "./components/Schools/Calender";
 
 // Uncomment these when the components are available
 // import StudentFeeDetails from './pages/StudentFeeDetails';
@@ -206,6 +207,17 @@ function App() {
             </ProtectedRoute>
           } 
         />
+
+<Route 
+          path="/Calender" 
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'school']}>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <SchoolCalendar />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Uncomment these routes when the components are available */}
         {/* 
@@ -273,6 +285,16 @@ function App() {
                      <ProtectedRoute allowedRoles={['admin']}>
                        <Layout onLogout={handleLogout} userRole={userRole}>
                          <StaffDocumentManagement />
+                       </Layout>
+                     </ProtectedRoute>
+                   } 
+                 />
+                 <Route 
+                   path="/reports-admin" 
+                   element={
+                     <ProtectedRoute allowedRoles={['admin']}>
+                       <Layout onLogout={handleLogout} userRole={userRole}>
+                         <SchoolReports />
                        </Layout>
                      </ProtectedRoute>
                    } 
