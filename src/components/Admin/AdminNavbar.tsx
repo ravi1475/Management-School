@@ -149,6 +149,20 @@ const AdminNavbar = {
             onClick={() => toggleDropdown("staff")}
           >
             <NavLink 
+
+              to="/master" 
+              label="Master Dashboard" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/master/class-section" 
+              label="Classes & Sections" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/master/subjects" 
+              label="Subjects" 
+
               to="/staff" 
               label="Staff Directory" 
               onClick={() => setIsMobileSidebarOpen(false)}/>
@@ -156,6 +170,7 @@ const AdminNavbar = {
               <NavLink 
               to="/staff/documents" 
               label="Document Management" 
+
               onClick={() => setIsMobileSidebarOpen(false)}
             />
              
@@ -176,8 +191,13 @@ const AdminNavbar = {
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/students/admission" 
+              to="/students/StudentRegistrationForm" 
               label="New Admission" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/student/manage-students" 
+              label="Manage Students" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
@@ -187,7 +207,31 @@ const AdminNavbar = {
             />
           </NavDropdown>
 
-          
+
+          {/* Staff Dropdown */}
+          <NavDropdown 
+            title="Staff" 
+            icon={<Users className="h-5 w-5 text-orange-600" />}
+            isOpen={activeDropdown === "staff"} 
+            onClick={() => toggleDropdown("staff")}
+          >
+            <NavLink 
+              to="/staff" 
+              label="Staff Directory" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/staff/manage-teachers" 
+              label="Manage Teachers" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/staff/attendance" 
+              label="Attendance" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+          </NavDropdown>
+
 
           {/* Fees Dropdown */}
           <NavDropdown 

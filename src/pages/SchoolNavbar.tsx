@@ -134,9 +134,13 @@ const SchoolNavbar = {
             onClick={() => toggleDropdown("administration")}
           >
             <NavLink 
-              to="/school/administration/staff" 
-              label="Staff Management" 
-              onClick={() => setIsMobileSidebarOpen(false)}
+              to="/school/administration/manage-teachers" 
+              label="Manage Teachers" 
+              onClick={() => {
+                if (window.innerWidth < 768) { // Check for mobile view
+                  setIsMobileSidebarOpen(false);
+                }
+              }}
             />
             <NavLink 
               to="/school/administration/departments" 
@@ -182,8 +186,13 @@ const SchoolNavbar = {
             onClick={() => toggleDropdown("students")}
           >
             <NavLink 
-              to="/school/students/admissions" 
+              to="/students/StudentRegistrationForm" 
               label="Admissions" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/school/students/manage-students" 
+              label="Manage Students" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
@@ -231,12 +240,17 @@ const SchoolNavbar = {
             onClick={() => toggleDropdown("finance")}
           >
             <NavLink 
+              to="/school/financial-management/account-page" 
+              label="Accounts Management" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
               to="/school/finance/budget" 
               label="Budget Planning" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/school/finance/fees" 
+              to="/school/financial-management/fee-structure" 
               label="Fee Structure" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
@@ -245,31 +259,14 @@ const SchoolNavbar = {
               label="Expense Tracking" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
+            <NavLink 
+              to="/school/students/financial-management/student-management" 
+              label="Dues & Payments" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
           </NavDropdown>
 
-          {/* Assessment & Reporting */}
-          <NavDropdown 
-            title="Assessment & Reporting" 
-            icon={<FileText className="h-5 w-5 text-red-600" />}
-            isOpen={activeDropdown === "assessment"} 
-            onClick={() => toggleDropdown("assessment")}
-          >
-            <NavLink 
-              to="/school/assessment/exams" 
-              label="Examination System" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/school/assessment/grading" 
-              label="Grading Policies" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/school/assessment/reports" 
-              label="Report Cards" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-          </NavDropdown>
+         
 
           {/* School Calendar */}
           <NavLink 
@@ -281,7 +278,7 @@ const SchoolNavbar = {
 
           {/* Analytics & Reports */}
           <NavLink 
-            to="/school/analytics" 
+            to="/school/reports" 
             icon={<BarChart2 className="h-5 w-5 text-yellow-600" />} 
             label="Analytics & Reports" 
             onClick={() => setIsMobileSidebarOpen(false)}
