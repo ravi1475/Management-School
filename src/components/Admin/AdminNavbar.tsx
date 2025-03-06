@@ -148,17 +148,7 @@ const AdminNavbar = {
             isOpen={activeDropdown === "staff"} 
             onClick={() => toggleDropdown("staff")}
           >
-            <NavLink 
-
-              to="/master" 
-              label="Master Dashboard" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/master/class-section" 
-              label="Classes & Sections" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
+           
             <NavLink 
               
 
@@ -183,12 +173,7 @@ const AdminNavbar = {
             isOpen={activeDropdown === "students"} 
             onClick={() => toggleDropdown("students")}
           >
-            <NavLink 
-              to="/students" 
-              label="Student Directory" 
-              badge={158}
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
+           
             <NavLink 
               to="/students/StudentRegistrationForm" 
               label="New Admission" 
@@ -199,37 +184,11 @@ const AdminNavbar = {
               label="Manage Students" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
-            <NavLink 
-              to="/students/attendance" 
-              label="Attendance" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
+           
           </NavDropdown>
 
 
-          {/* Staff Dropdown */}
-          <NavDropdown 
-            title="Staff" 
-            icon={<Users className="h-5 w-5 text-orange-600" />}
-            isOpen={activeDropdown === "staff"} 
-            onClick={() => toggleDropdown("staff")}
-          >
-            <NavLink 
-              to="/staff" 
-              label="Staff Directory" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/staff/manage-teachers" 
-              label="Manage Teachers" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <NavLink 
-              to="/staff/attendance" 
-              label="Attendance" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-          </NavDropdown>
+    
 
 
           {/* Fees Dropdown */}
