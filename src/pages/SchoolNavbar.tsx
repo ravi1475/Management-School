@@ -270,7 +270,7 @@ const SchoolNavbar = {
 
           {/* School Calendar */}
           <NavLink 
-            to="/school/calendar" 
+            to="/Calender" 
             icon={<Calendar className="h-5 w-5 text-indigo-600" />} 
             label="School Calendar" 
             onClick={() => setIsMobileSidebarOpen(false)}
