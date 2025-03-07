@@ -17,6 +17,41 @@ export const ClassSectionManagement = () => {
       teacher: 'Sarah Johnson',
       subjects: ['Basic Math', 'Phonics'],
     },
+    {
+      id: 2,
+      className: 'KINDERGARTEN',
+      sectionName: 'B',
+      teacher: 'John Doe',
+      subjects: ['Art', 'Music'],
+    },
+    {
+      id: 3,
+      className: 'GRADE 1',
+      sectionName: 'C',
+      teacher: 'Jane Smith',
+      subjects: ['Science', 'Math'],
+    },
+    {
+      id: 4,
+      className: 'GRADE 2',
+      sectionName: 'A',
+      teacher: 'Emily Davis',
+      subjects: ['History', 'Geography'],
+    },
+    {
+      id: 5,
+      className: 'GRADE 3',
+      sectionName: 'B',
+      teacher: 'Michael Brown',
+      subjects: ['English', 'Social Studies'],
+    },
+    {
+      id: 6,
+      className: 'GRADE 4',
+      sectionName: 'C',
+      teacher: 'Laura Wilson',
+      subjects: ['Math', 'Science'],
+    },
   ];
 
   const [items, setItems] = useState<ClassSectionItem[]>(initialItems);
@@ -33,6 +68,10 @@ export const ClassSectionManagement = () => {
   });
   const [newSubject, setNewSubject] = useState('');
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const generateNewId = () => {
     return items.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1;
   };
@@ -45,6 +84,18 @@ export const ClassSectionManagement = () => {
       item.teacher.toLowerCase().includes(searchLower)
     );
   });
+
+  // Pagination logic
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,9 +119,8 @@ export const ClassSectionManagement = () => {
   const handleDelete = (id: number) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       setItems(items.filter((i) => i.id !== id));
-      // Keep the popup open and update the selected item
       if (selectedItem && selectedItem.id === id) {
-        setSelectedItem(null); // Clear selected item if it was deleted
+        setSelectedItem(null);
       }
     }
   };
@@ -160,9 +210,9 @@ export const ClassSectionManagement = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredItems.map((item, index) => (
+              {paginatedItems.map((item, index) => (
                 <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-500">{index + 1}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.className}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.sectionName}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.teacher}</td>
@@ -190,6 +240,27 @@ export const ClassSectionManagement = () => {
               </p>
             </div>
           )}
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-indigo-300"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-700">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-indigo-300"
+            >
+              Next
+            </button>
+          </div>
         </div>
 
         {/* Subjects Popup */}
