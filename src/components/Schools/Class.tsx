@@ -4,72 +4,117 @@ interface ClassSectionItem {
   id: number;
   className: string;
   sectionName: string;
+  teacher: string;
+  subjects: string[];
 }
 
 export const ClassSectionManagement = () => {
   const initialItems: ClassSectionItem[] = [
-    { id: 1, className: 'NURSERY', sectionName: 'A' },
-    { id: 2, className: 'KG', sectionName: 'B' },
-    { id: 3, className: '1st', sectionName: 'C' },
-    // Add more initial data as needed
+    {
+      id: 1,
+      className: 'NURSERY',
+      sectionName: 'A',
+      teacher: 'Sarah Johnson',
+      subjects: ['Basic Math', 'Phonics'],
+    },
   ];
 
   const [items, setItems] = useState<ClassSectionItem[]>(initialItems);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubjectsPopupOpen, setIsSubjectsPopupOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<ClassSectionItem | null>(null);
-  const [formData, setFormData] = useState({ className: '', sectionName: '' });
+  const [selectedItem, setSelectedItem] = useState<ClassSectionItem | null>(null);
+  const [formData, setFormData] = useState({
+    className: '',
+    sectionName: '',
+    teacher: '',
+    subjects: [] as string[],
+  });
+  const [newSubject, setNewSubject] = useState('');
 
-  // Filtered items
-  const filteredItems = items.filter(item => {
+  const generateNewId = () => {
+    return items.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1;
+  };
+
+  const filteredItems = items.filter((item) => {
+    const searchLower = searchTerm.toLowerCase();
     return (
-      item.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.sectionName.toLowerCase().includes(searchTerm.toLowerCase())
+      item.className.toLowerCase().includes(searchLower) ||
+      item.sectionName.toLowerCase().includes(searchLower) ||
+      item.teacher.toLowerCase().includes(searchLower)
     );
   });
 
-  // Handle add/edit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.className.trim() || !formData.sectionName.trim()) return;
+    if (!formData.className.trim() || !formData.sectionName.trim() || !formData.teacher.trim()) return;
 
     if (currentItem) {
-      // Update existing
-      setItems(items.map(i => 
-        i.id === currentItem.id ? { ...i, ...formData } : i
-      ));
+      setItems(items.map((i) => (i.id === currentItem.id ? { ...i, ...formData } : i)));
     } else {
-      // Add new
       const newItem: ClassSectionItem = {
-        id: Math.max(...items.map(i => i.id)) + 1,
+        id: generateNewId(),
+        ...formData,
         className: formData.className.trim(),
-        sectionName: formData.sectionName.trim()
+        sectionName: formData.sectionName.trim(),
+        teacher: formData.teacher.trim(),
       };
       setItems([...items, newItem]);
     }
-
     resetForm();
   };
 
-  // Handle delete
   const handleDelete = (id: number) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
-      setItems(items.filter(i => i.id !== id));
+      setItems(items.filter((i) => i.id !== id));
+      // Keep the popup open and update the selected item
+      if (selectedItem && selectedItem.id === id) {
+        setSelectedItem(null); // Clear selected item if it was deleted
+      }
     }
   };
 
-  // Edit item
   const handleEdit = (item: ClassSectionItem) => {
     setCurrentItem(item);
-    setFormData({ className: item.className, sectionName: item.sectionName });
+    setFormData({
+      className: item.className,
+      sectionName: item.sectionName,
+      teacher: item.teacher,
+      subjects: item.subjects,
+    });
     setIsModalOpen(true);
+    setIsSubjectsPopupOpen(false);
   };
 
-  // Reset form
   const resetForm = () => {
-    setFormData({ className: '', sectionName: '' });
+    setFormData({
+      className: '',
+      sectionName: '',
+      teacher: '',
+      subjects: [],
+    });
     setCurrentItem(null);
     setIsModalOpen(false);
+    setIsSubjectsPopupOpen(false);
+    setNewSubject('');
+  };
+
+  const handleAddSubject = () => {
+    if (newSubject.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        subjects: [...prev.subjects, newSubject.trim()],
+      }));
+      setNewSubject('');
+    }
+  };
+
+  const handleRemoveSubject = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      subjects: prev.subjects.filter((_, i) => i !== index),
+    }));
   };
 
   return (
@@ -80,19 +125,17 @@ export const ClassSectionManagement = () => {
           <p className="mt-1 text-sm text-gray-500">Manage classes and sections efficiently</p>
         </div>
 
-        {/* Controls */}
         <div className="bg-white shadow rounded-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                resetForm();
+                setIsModalOpen(true);
+              }}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium flex items-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
               Add New
             </button>
-
             <div className="flex-1 max-w-md">
               <input
                 type="text"
@@ -105,7 +148,6 @@ export const ClassSectionManagement = () => {
           </div>
         </div>
 
-        {/* Table */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -113,7 +155,8 @@ export const ClassSectionManagement = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sr. No</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Section</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teacher</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Subjects</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -122,22 +165,16 @@ export const ClassSectionManagement = () => {
                   <td className="px-6 py-4 text-sm text-gray-500">{index + 1}</td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.className}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.sectionName}</td>
-                  <td className="px-6 py-4 text-sm text-center space-x-2">
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.teacher}</td>
+                  <td className="px-6 py-4 text-sm text-center">
                     <button
-                      onClick={() => handleEdit(item)}
+                      onClick={() => {
+                        setSelectedItem(item);
+                        setIsSubjectsPopupOpen(true);
+                      }}
                       className="text-indigo-600 hover:text-indigo-900"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
+                      Subjects
                     </button>
                   </td>
                 </tr>
@@ -147,31 +184,68 @@ export const ClassSectionManagement = () => {
 
           {filteredItems.length === 0 && (
             <div className="px-6 py-12 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
               <h3 className="mt-2 text-sm font-medium text-gray-900">No items found</h3>
               <p className="mt-1 text-sm text-gray-500">
-                {searchTerm ? 
-                  'Try adjusting your search' : 
-                  'Get started by creating a new item'}
+                {searchTerm ? 'Try adjusting your search' : 'Get started by creating a new item'}
               </p>
             </div>
           )}
         </div>
 
-        {/* Modal */}
+        {/* Subjects Popup */}
+        {isSubjectsPopupOpen && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Subjects</h3>
+                <button onClick={() => setIsSubjectsPopupOpen(false)} className="text-gray-400 hover:text-gray-500">
+                  ×
+                </button>
+              </div>
+
+              <div className="px-6 py-4 space-y-4">
+                {selectedItem ? (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Subjects</label>
+                      <ul className="list-disc pl-5">
+                        {selectedItem.subjects.map((subject, index) => (
+                          <li key={index} className="text-sm text-gray-600">{subject}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="border-t border-gray-200 pt-4 flex justify-end gap-3">
+                      <button
+                        onClick={() => handleEdit(selectedItem)}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(selectedItem.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-600">No item selected.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add/Edit Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
               <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 className="text-lg font-medium text-gray-900">
-                  {currentItem ? 'Edit Item' : 'Add New Item'}
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900">{currentItem ? 'Edit Item' : 'Add New Item'}</h3>
                 <button onClick={resetForm} className="text-gray-400 hover:text-gray-500">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  ×
                 </button>
               </div>
 
@@ -183,7 +257,7 @@ export const ClassSectionManagement = () => {
                   <input
                     type="text"
                     value={formData.className}
-                    onChange={(e) => setFormData(prev => ({ ...prev, className: e.target.value }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, className: e.target.value }))}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
                     required
                   />
@@ -196,10 +270,58 @@ export const ClassSectionManagement = () => {
                   <input
                     type="text"
                     value={formData.sectionName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, sectionName: e.target.value }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, sectionName: e.target.value }))}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
                     required
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Teacher <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.teacher}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, teacher: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    required
+                  />
+                </div>
+
+                {/* Subject Input Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Subjects</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newSubject}
+                      onChange={(e) => setNewSubject(e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="Add a subject"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddSubject}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {formData.subjects.map((subject, index) => (
+                      <span key={index} className="inline-flex items-center px-2 py-1 rounded bg-gray-100 text-sm">
+                        {subject}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSubject(index)}
+                          className="ml-1 text-gray-500 hover:text-gray-700"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="border-t border-gray-200 pt-4 flex justify-end gap-3">

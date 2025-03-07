@@ -206,6 +206,11 @@ const SchoolNavbar = {
               label="Student Records" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
+            <NavLink 
+              to="/school/students/class-section" 
+              label="Manage Class and Section" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
           </NavDropdown>
 
           {/* Faculty Management */}

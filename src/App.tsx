@@ -13,7 +13,7 @@ import UserManagement from './pages/UserManagement';
 import UserEdit from './pages/UserEdit';
 import LoginForm from './pages/LoginForm';
 
-import { ClassSectionManagement } from './components/Admin/Class'
+import { ClassSectionManagement } from './components/Schools/Class'
 import { ManageTeachers } from './pages/ManageTeachers'
 import { ManageStudent } from './pages/ManageStudents'
 // import  StudentFeeDetails  from './components/StudentFeeDetails'
@@ -216,11 +216,11 @@ function App() {
         />
 
         < Route
-          path='/master/class-section'
+          path='/school/students/class-section'
           element={
             <ProtectedRoute>
               <Layout userRole={userRole} onLogout={handleLogout}>
-                <ManageStudent />
+                <ClassSectionManagement />
               </Layout>
             </ProtectedRoute>
           }
@@ -247,7 +247,7 @@ function App() {
           } > </Route>
 
 
-<Route 
+        <Route 
           path="/Calender" 
           element={
             <ProtectedRoute allowedRoles={['admin', 'school']}>
