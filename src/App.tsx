@@ -14,7 +14,6 @@ import UserEdit from './pages/UserEdit';
 import LoginForm from './pages/LoginForm';
 
 import { ClassSectionManagement } from './components/Schools/Class'
-import { ManageTeachers } from './pages/ManageTeachers'
 import { ManageStudent } from './pages/ManageStudents'
 // import  StudentFeeDetails  from './components/StudentFeeDetails'
 
@@ -24,7 +23,7 @@ import StaffDirectory from './components/Admin/StaffDirectory';
 import StaffDocumentManagement from "./components/Admin/StaffDocumentManagement";
 import SchoolReports from "./components/Admin/Reports";
 import SchoolCalendar from "./components/Schools/Calender";
-
+import TeacherDirectory from "./components/Schools/TeacherDirectory"
 
 // Uncomment these when the components are available
 // import StudentFeeDetails from './pages/StudentFeeDetails';
@@ -225,6 +224,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        < Route
+          path='/school/faculty/teachers'
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <TeacherDirectory />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path='/school/students/manage-students'
@@ -236,15 +245,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path='/school/administration/manage-teachers'
-          element={
-            <ProtectedRoute>
-              <Layout userRole={userRole} onLogout={handleLogout}>
-                <ManageTeachers />
-              </Layout>
-            </ProtectedRoute>
-          } > </Route>
 
 
         <Route 

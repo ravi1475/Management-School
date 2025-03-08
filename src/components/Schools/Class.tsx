@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import { FiEye, FiEdit, FiTrash2, FiX } from 'react-icons/fi';
 interface ClassSectionItem {
   id: number;
   className: string;
@@ -206,7 +206,7 @@ export const ClassSectionManagement = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Section</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teacher</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Subjects</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -216,7 +216,7 @@ export const ClassSectionManagement = () => {
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.className}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.sectionName}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.teacher}</td>
-                  <td className="px-6 py-4 text-sm text-center">
+                  <td className="px-6 py-4 text-sm text-center space-x-4">
                     <button
                       onClick={() => {
                         setSelectedItem(item);
@@ -224,7 +224,19 @@ export const ClassSectionManagement = () => {
                       }}
                       className="text-indigo-600 hover:text-indigo-900"
                     >
-                      Subjects
+                      <FiEye className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="text-indigo-600 hover:text-indigo-900"
+                    >
+                      <FiEdit className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      <FiTrash2 className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
@@ -263,12 +275,12 @@ export const ClassSectionManagement = () => {
           </div>
         </div>
 
-        {/* Subjects Popup */}
+        {/* View Details Popup */}
         {isSubjectsPopupOpen && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
               <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 className="text-lg font-medium text-gray-900">Subjects</h3>
+                <h3 className="text-lg font-medium text-gray-900">Class Details</h3>
                 <button onClick={() => setIsSubjectsPopupOpen(false)} className="text-gray-400 hover:text-gray-500">
                   ×
                 </button>
@@ -278,27 +290,24 @@ export const ClassSectionManagement = () => {
                 {selectedItem ? (
                   <>
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                      <p className="text-sm text-gray-600">{selectedItem.className}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                      <p className="text-sm text-gray-600">{selectedItem.sectionName}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Teacher</label>
+                      <p className="text-sm text-gray-600">{selectedItem.teacher}</p>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Subjects</label>
                       <ul className="list-disc pl-5">
                         {selectedItem.subjects.map((subject, index) => (
                           <li key={index} className="text-sm text-gray-600">{subject}</li>
                         ))}
                       </ul>
-                    </div>
-
-                    <div className="border-t border-gray-200 pt-4 flex justify-end gap-3">
-                      <button
-                        onClick={() => handleEdit(selectedItem)}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(selectedItem.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
                     </div>
                   </>
                 ) : (
@@ -360,7 +369,6 @@ export const ClassSectionManagement = () => {
                   />
                 </div>
 
-                {/* Subject Input Field */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Subjects</label>
                   <div className="flex gap-2">
