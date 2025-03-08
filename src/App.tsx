@@ -13,8 +13,7 @@ import UserManagement from './pages/UserManagement';
 import UserEdit from './pages/UserEdit';
 import LoginForm from './pages/LoginForm';
 
-import { ClassSectionManagement } from './components/Admin/Class'
-import { ManageTeachers } from './pages/ManageTeachers'
+import { ClassSectionManagement } from './components/Schools/Class'
 import { ManageStudent } from './pages/ManageStudents'
 // import  StudentFeeDetails  from './components/StudentFeeDetails'
 
@@ -24,7 +23,7 @@ import StaffDirectory from './components/Admin/StaffDirectory';
 import StaffDocumentManagement from "./components/Admin/StaffDocumentManagement";
 import SchoolReports from "./components/Admin/Reports";
 import SchoolCalendar from "./components/Schools/Calender";
-
+import TeacherDirectory from "./components/Schools/TeacherDirectory"
 
 // Uncomment these when the components are available
 // import StudentFeeDetails from './pages/StudentFeeDetails';
@@ -216,11 +215,21 @@ function App() {
         />
 
         < Route
-          path='/master/class-section'
+          path='/school/students/class-section'
           element={
             <ProtectedRoute>
               <Layout userRole={userRole} onLogout={handleLogout}>
-                <ManageStudent />
+                <ClassSectionManagement />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        < Route
+          path='/school/faculty/teachers'
+          element={
+            <ProtectedRoute>
+              <Layout userRole={userRole} onLogout={handleLogout}>
+                <TeacherDirectory />
               </Layout>
             </ProtectedRoute>
           }
@@ -236,18 +245,9 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path='/school/administration/manage-teachers'
-          element={
-            <ProtectedRoute>
-              <Layout userRole={userRole} onLogout={handleLogout}>
-                <ManageTeachers />
-              </Layout>
-            </ProtectedRoute>
-          } > </Route>
 
 
-<Route 
+        <Route 
           path="/Calender" 
           element={
             <ProtectedRoute allowedRoles={['admin', 'school']}>
