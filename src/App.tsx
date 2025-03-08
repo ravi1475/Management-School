@@ -22,10 +22,15 @@ import ManageSchools from './components/Admin/ManageSchools';
 import ManageUsers from './components/Admin/ManageUser';
 import StaffDirectory from './components/Admin/StaffDirectory';
 import StaffDocumentManagement from "./components/Admin/StaffDocumentManagement";
-import SchoolReports from "./components/Admin/Reports";
+import SchoolReports from "./components/Schools/Reports";
 import SchoolCalendar from "./components/Schools/Calender";
-
-
+import BudgetPlanning from "./components/Schools/BudgetPlanning";
+import ExpenseTracker from "./components/Schools/ExpenseTracker";
+import AccreditationComponent from "./components/Schools/Accreditation";
+import DepartmentManagement from "./components/Schools/DepartmentManagement";
+import ReportsDashboard from "./components/Admin/MainReports";
+import ClassAssignmentManager from "./components/Schools/Assignment";
+import TeacherEvaluationPage from "./components/Schools/TeacherEvaluation";
 // Uncomment these when the components are available
 // import StudentFeeDetails from './pages/StudentFeeDetails';
 // import PaymentGateway from './pages/PaymentGateway';
@@ -215,6 +220,51 @@ function App() {
           } 
         />
 
+          <Route 
+                    path="/School/BudgetPlanning" 
+                    element={
+                      <ProtectedRoute allowedRoles={['school']}>
+                        <Layout userRole={userRole} onLogout={handleLogout}>
+                          < BudgetPlanning/>
+                        </Layout>
+                      </ProtectedRoute>
+                    } 
+                  />
+          <Route 
+                    path="/School/ExpenseTracker" 
+                    element={
+                      <ProtectedRoute allowedRoles={['school']}>
+                        <Layout userRole={userRole} onLogout={handleLogout}>
+                          < ExpenseTracker/>
+                        </Layout>
+                      </ProtectedRoute>
+                    } 
+                  />
+
+
+          <Route 
+                    path="/School/Accreditation" 
+                    element={
+                      <ProtectedRoute allowedRoles={['school']}>
+                        <Layout userRole={userRole} onLogout={handleLogout}>
+                          < AccreditationComponent/>
+                        </Layout>
+                      </ProtectedRoute>
+                    } 
+                  />
+          <Route 
+                    path="/school/administration/departments" 
+                    element={
+                      <ProtectedRoute allowedRoles={['school']}>
+                        <Layout userRole={userRole} onLogout={handleLogout}>
+                          < DepartmentManagement/>
+                        </Layout>
+                      </ProtectedRoute>
+                    } 
+                  />
+
+
+
         < Route
           path='/master/class-section'
           element={
@@ -330,11 +380,41 @@ function App() {
                    } 
                  />
                  <Route 
-                   path="/reports-admin" 
+                   path="/Report-admin" 
                    element={
                      <ProtectedRoute allowedRoles={['admin']}>
                        <Layout onLogout={handleLogout} userRole={userRole}>
+                         <ReportsDashboard />
+                       </Layout>
+                     </ProtectedRoute>
+                   } 
+                 />
+                 <Route 
+                   path="/School/report" 
+                   element={
+                     <ProtectedRoute allowedRoles={['school']}>
+                       <Layout onLogout={handleLogout} userRole={userRole}>
                          <SchoolReports />
+                       </Layout>
+                     </ProtectedRoute>
+                   } 
+                 />
+                 <Route 
+                   path="/School/ClassAssignment" 
+                   element={
+                     <ProtectedRoute allowedRoles={['school']}>
+                       <Layout onLogout={handleLogout} userRole={userRole}>
+                         <ClassAssignmentManager />
+                       </Layout>
+                     </ProtectedRoute>
+                   } 
+                 />
+                 <Route 
+                   path="/School/TeacherEvaluationPage" 
+                   element={
+                     <ProtectedRoute allowedRoles={['school']}>
+                       <Layout onLogout={handleLogout} userRole={userRole}>
+                         <TeacherEvaluationPage />
                        </Layout>
                      </ProtectedRoute>
                    } 

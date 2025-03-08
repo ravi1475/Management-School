@@ -147,14 +147,10 @@ const SchoolNavbar = {
               label="Departments" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
-            <NavLink 
-              to="/school/administration/policies" 
-              label="School Policies" 
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
+            
           </NavDropdown>
 
-          {/* Academic Programs */}
+          {/* Academic Programs
           <NavDropdown 
             title="Academic Programs" 
             icon={<Book className="h-5 w-5 text-purple-600" />}
@@ -176,7 +172,7 @@ const SchoolNavbar = {
               label="Class Structure" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
-          </NavDropdown>
+          </NavDropdown> */}
 
           {/* Student Management */}
           <NavDropdown 
@@ -221,12 +217,17 @@ const SchoolNavbar = {
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/school/faculty/assignments" 
+              to="/school/faculty/Bustracking" 
+              label="Bus tracking" 
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <NavLink 
+              to="/School/ClassAssignment" 
               label="Class Assignments" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/school/faculty/evaluations" 
+              to="/School/TeacherEvaluationPage" 
               label="Teacher Evaluations" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
@@ -245,7 +246,7 @@ const SchoolNavbar = {
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/school/finance/budget" 
+              to="/School/BudgetPlanning" 
               label="Budget Planning" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
@@ -255,7 +256,7 @@ const SchoolNavbar = {
               onClick={() => setIsMobileSidebarOpen(false)}
             />
             <NavLink 
-              to="/school/finance/expenses" 
+              to="/School/ExpenseTracker" 
               label="Expense Tracking" 
               onClick={() => setIsMobileSidebarOpen(false)}
             />
@@ -271,6 +272,12 @@ const SchoolNavbar = {
           {/* School Calendar */}
           <NavLink 
             to="/Calender" 
+            icon={<Book className="h-5 w-5 text-indigo-600" />} 
+            label="Exams & Grade Management" 
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+          <NavLink 
+            to="/Calender" 
             icon={<Calendar className="h-5 w-5 text-indigo-600" />} 
             label="School Calendar" 
             onClick={() => setIsMobileSidebarOpen(false)}
@@ -278,7 +285,7 @@ const SchoolNavbar = {
 
           {/* Analytics & Reports */}
           <NavLink 
-            to="/school/reports" 
+            to="/School/report" 
             icon={<BarChart2 className="h-5 w-5 text-yellow-600" />} 
             label="Analytics & Reports" 
             onClick={() => setIsMobileSidebarOpen(false)}
@@ -286,7 +293,7 @@ const SchoolNavbar = {
 
           {/* Accreditation */}
           <NavLink 
-            to="/school/accreditation" 
+            to="/School/Accreditation" 
             icon={<Award className="h-5 w-5 text-pink-600" />} 
             label="Accreditation" 
             onClick={() => setIsMobileSidebarOpen(false)}

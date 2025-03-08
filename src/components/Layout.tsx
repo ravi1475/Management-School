@@ -9,7 +9,7 @@ import {
   Search
 } from "lucide-react";
 import TeacherNavbar from "../pages/TeacherNavbar";
-import SchoolNavbar from "../pages/SchoolNavbar";
+import SchoolNavbar from "./Schools/SchoolNavbar";
 import AdminNavbar from "./Admin/AdminNavbar";
 
 interface LayoutProps {
